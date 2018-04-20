@@ -13,7 +13,7 @@ class TestBTreeNode(unittest.TestCase):
         b.add_key(6)
         b.add_key(4)
         
-        rs = [b.get_key(i) for i in range(4)]
+        rs = [b.keys[i] for i in range(4)]
         exp = [4, 6, 8, 10]
         self.assertEqual(exp, rs)      
 
@@ -24,17 +24,6 @@ class TestBTreeNode(unittest.TestCase):
         with self.assertRaises(ValueError):
             for i in range(5):
                 b.add_key(i*2)        
-
-
-    def test_get_key_when_index_exceeds(self):
-        b = BTreeNode(4)
-        inp = [8, 2, 4, 10]
-        for i in inp:
-            b.add_key(i)
-
-        with self.assertRaises(ValueError):
-            for i in range(5):
-                b.get_key(i)
 
 
     def test_find_key_index(self):
@@ -107,9 +96,8 @@ class TestBTreeNode(unittest.TestCase):
         c2.add_key(3)
         b.add_child(c2)
 
-        self.assertEqual(c1,  b.find_child(1))
-        self.assertEqual(c2,  b.find_child(3))
-        self.assertEqual(c2,  b.find_child(5))   
+        self.assertEqual(c1,  b.children[0])
+        self.assertEqual(c2,  b.children[1])
 
 
     def test_move_keys_and_children(self):
@@ -142,15 +130,15 @@ class TestBTreeNode(unittest.TestCase):
         b = BTreeNode(4)
         a.move_keys_and_children(2, b)
         
-        self.assertEqual(2, len(a._keys), "Key size of node 'a' after move is not matching")
-        self.assertEqual([20,30], a._keys)
-        self.assertEqual(3, len(a._children), "children size of node 'a' after move is not matching")
-        self.assertEqual(c1,  a._children[0])
-        self.assertEqual(c2,  a._children[1])
-        self.assertEqual(c3,  a._children[2])
+        self.assertEqual(2, len(a.keys), "Key size of node 'a' after move is not matching")
+        self.assertEqual([20,30], a.keys)
+        self.assertEqual(3, len(a.children), "children size of node 'a' after move is not matching")
+        self.assertEqual(c1,  a.children[0])
+        self.assertEqual(c2,  a.children[1])
+        self.assertEqual(c3,  a.children[2])
 
-        self.assertEqual(1, len(b._keys), "Key size of node 'b' after move is not matching")
-        self.assertEqual([50], b._keys)
-        self.assertEqual(2, len(b._children), "children size of node 'b' after move is not matching")
-        self.assertEqual(c4,  b._children[0])
-        self.assertEqual(c5,  b._children[1])
+        self.assertEqual(1, len(b.keys), "Key size of node 'b' after move is not matching")
+        self.assertEqual([50], b.keys)
+        self.assertEqual(2, len(b.children), "children size of node 'b' after move is not matching")
+        self.assertEqual(c4,  b.children[0])
+        self.assertEqual(c5,  b.children[1])

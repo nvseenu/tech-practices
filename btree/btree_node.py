@@ -1,10 +1,18 @@
+import logging
 
 class BTreeNode:
+    """
+       This class represents a node in BTree  data structure. 
+       The node keeps its keys and childrens in ascending order.
+
+       The node can have 'n' keys and 'n+1' children.
+    """
     
     def __init__(self, size):
         self._keys = []
         self._children = []
         self._size = size
+        # It denotes which block the current node belongs to
         self._block_id=None
         self._loaded = False        
         
@@ -18,47 +26,62 @@ class BTreeNode:
 
     @property    
     def keys(self):
-        return self._keys    
+        return self._keys   
 
-
+    
     def is_loaded(self):
+        """
+        Tells if the node is loaded completely with keys and children  
+        """
         return self._loaded
+
+    def set_loaded(self, loaded):
+        self._loaded = loaded    
 
     @property
     def children(self):
         return self._children    
 
-
+   
     def load(self, keys, children):
         self._keys = keys
         self._children = children
         self._loaded = True        
-
+   
     def add_key(self, k):
+        """
+        Added a given key into the node
+        """
         if self.is_full():
             raise ValueError("Node is full")
 
         pos = self.find_key_index(k)
+        #if the key is bigger than existing elements, insert it at last index
         if pos == -1:
             self._keys.insert(len(self._keys), k)    
         else:
             self._keys.insert(pos, k)
 
-    def get_key(self, index):
-        if index >= len(self._keys):
-            raise ValueError("Index is out of range")
-
-        return self._keys[index]
-
     def remove_key(self, index):
+        """
+        Removes the key located at the given index 
+        """
         # print("remove key at ", index)
         del self._keys[index]
 
+
     def add_child(self, node):
-        i = self._find_free_child_index(node)
+        """
+        Adds a given child at its appropriate index 
+        """
+        i = self.find_child_index(node._keys[0])
         self._children.insert(i, node)
 
+
     def remove_child(self, index):
+        """
+        Removes the child located at given index    
+        """
         del self._children[index]
 
 
@@ -66,17 +89,26 @@ class BTreeNode:
         self._children.append(n)    
 
     def find_child(self, key):
-        i = self._find_child_index(key)
-        return self._children[i] if i < len(self._children) else None
+        return self.find_child_index(key) 
+
+    def find_child_index(self, key):
+        """
+        Finds a child node where the given key can be stored 
+        """
+        i = self.find_key_index(key)
+        if i == -1:
+            return len(self._children)
+        else:
+            return i
 
     def move_keys_and_children(self, index, target):
         """
-           Moves keys and their respective children from given index to target node.     
+        Moves keys and their respective children from given index to target node.     
         """
         i = index + 1
         while i < len(self):
             #print("copying key {} to right node".format(self.get_key(i)))
-            target.add_key(self.get_key(i))            
+            target.add_key(self.keys[i])            
             i += 1
 
         # move children associated with the keys moved
@@ -109,13 +141,18 @@ class BTreeNode:
     def children_len(self):
         return len(self._children)    
 
-    def is_full(self):
+    def is_full(self):        
         return len(self._keys) == self._size
 
     def is_leaf(self):
         return len(self._children) == 0
 
-    def find_key_index(self, k):
+    def find_key_index(self, k):  
+        """
+        Finds an index at which key can be inserted. It follows rules to find an index:
+        1) keys at 0 to i-1 are smaller than the key
+        2) keys at i+1 to n are greater than the key
+        """      
         for i in range(len(self._keys)):
             if k <= self._keys[i]:
                 return i
@@ -131,6 +168,9 @@ class BTreeNode:
         return len(self._children)
 
     def _find_child_index(self, key):
+        """
+        Finds a child node where the given key can be stored
+        """
         for i in range(len(self._keys)):
             if self._keys[i] >= key:
                 return i
@@ -138,14 +178,15 @@ class BTreeNode:
     
 
     def __str__(self):
-        s = []
-        ks = [str(i) + ":" + str(v) for i, v in enumerate(self._keys)]
-        s.append("keys => " + ", ".join(ks))
+        #s = []
+        #ks = [str(i) + ":" + str(v) for i, v in enumerate(self._keys)]
+        #s.append("keys => " + ", ".join(ks))
 
-        cs = []
-        cs.append("Children => ")
-        cs = [
-            str(i) + ":" + str(v._keys) for i, v in enumerate(self._children)
-        ]
-        s.append("children => " + ", ".join(cs))
-        return "\n".join(s)
+        #cs = []
+        #cs.append("Children => ")
+        #cs = [
+        #    str(i) + ":" + str(v._keys) for i, v in enumerate(self._children)
+        #]
+        #s.append("children => " + ", ".join(cs))
+        #return "\n".join(s)
+        return "Node{{ keys: {}, children:{} }}".format(self._keys, self._children)

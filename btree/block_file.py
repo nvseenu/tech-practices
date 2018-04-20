@@ -1,7 +1,13 @@
 import struct
 import os
-class BlockFile:
 
+class BlockFile:
+    """
+       This class splits a file into blocks. Each block is associated with an id starting from 0.
+       This class can store and retrive given data bytes into/from given block id.
+       It does not care about what bytes it is asked to store / retrieve as long as they fit with given 
+       block size.
+    """
     META_SIZE = 32
 
     def __init__(self,filepath, block_size):        
@@ -9,7 +15,6 @@ class BlockFile:
         self.block_size = block_size        
         filemode = 'rb+' if os.path.exists(filepath) else 'wb+'        
         self.bfile = open(filepath, filemode)     
-
 
     
     def offset(self, block_id):
@@ -61,5 +66,5 @@ class BlockFile:
         return meta
 
     def _write_meta(self, block_id, data_size):
-        msize = struct.calcsize('LL')        
-        return struct.pack('LL', block_id, data_size)         
+        return struct.pack('LL', block_id, data_size)   
+
