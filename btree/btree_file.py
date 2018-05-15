@@ -14,8 +14,16 @@ class BTreeFile:
     def __init__(self, filepath, block_size, key_class):
         self._block_size = block_size
         self._blockfile = BlockFile(filepath, block_size)
-        self._block_id_count = 0
+        self._block_id_count = 1
         self._key_class = key_class
+        try:
+            self._root_block_id = self._read_root_block_id()
+        except ValueError as e:
+            self._root_block_id = 1        
+
+    @property
+    def root_block_id(self):
+        return self._root_block_id
     
 
     def write_node(self, node):
@@ -27,12 +35,20 @@ class BTreeFile:
 
         block_bytes = self._get_block_bytes(node)
         self._blockfile.write(block_id, block_bytes)
+
+        if node.is_root():
+            self._root_block_id = block_id            
+            self._write_root_block_id(self._root_block_id)
+            print("Wrote root block id as ", self._root_block_id)
+
         return block_id 
 
 
     def read_node(self, block_id):    
         block_bytes = self._blockfile.read(block_id)         
-        return self._get_node(block_bytes)
+        node = self._get_node(block_bytes)
+        node.block_id = block_id
+        return node
 
     def close(self):
         self._blockfile.close()   
@@ -59,7 +75,7 @@ class BTreeFile:
 
     def _get_node(self, block_bytes):
         # Read length header first and unpack_from method returns length as tuple
-        length_tup = struct.unpack_from('L', block_bytes, 0)            
+        length_tup = struct.unpack_from('L', block_bytes, 0)
         if length_tup is None:
             raise ValueError('Unable to read length header')
 
@@ -89,4 +105,16 @@ class BTreeFile:
         node.set_loaded(True)
         return node
 
+    def _write_root_block_id(self, id):
+        barr = bytearray(self._block_size)
+        struct.pack_into('L', barr, 0 , id)
+        self._blockfile.write(0, barr)
 
+    def _read_root_block_id(self):        
+        block_bytes = self._blockfile.read(0)
+        if len(block_bytes) == 0:
+            raise ValueError('Unable to read root node') 
+        
+        tup = struct.unpack_from('L', block_bytes, 0)
+        return tup[0]
+                

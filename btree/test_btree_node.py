@@ -26,22 +26,22 @@ class TestBTreeNode(unittest.TestCase):
                 b.add_key(i*2)        
 
 
-    def test_find_key_index(self):
+    def test_key_at(self):
         b = BTreeNode(4)
         inp = [8, 2, 4, 10]
         for i in inp:
             b.add_key(i)
 
-        self.assertEqual(2, b.find_key_index(8))    
-        self.assertEqual(1, b.find_key_index(4))
+        self.assertEqual(2, b.key_at(8))    
+        self.assertEqual(1, b.key_at(4))
 
-    def test_find_key_not_exist(self):
+    def test_key_at_when_not_exist(self):
         b = BTreeNode(4)
         inp = [8, 2, 4, 10]
         for i in inp:
             b.add_key(i)
 
-        self.assertEqual(-1, b.find_key_index(12))            
+        self.assertEqual(-1, b.key_at(12))            
 
 
     def test_is_full(self):
@@ -77,8 +77,8 @@ class TestBTreeNode(unittest.TestCase):
         c2.add_key(3)
         b.add_child(c2)
 
-        self.assertEqual(c1, b._children[0])
-        self.assertEqual(c2, b._children[1])
+        self.assertEqual(c1, b.children[0])
+        self.assertEqual(c2, b.children[1])
 
 
     def test_find_child(self):

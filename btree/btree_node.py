@@ -1,4 +1,5 @@
 import logging
+import json
 
 class BTreeNode:
     """
@@ -14,7 +15,8 @@ class BTreeNode:
         self._size = size
         # It denotes which block the current node belongs to
         self._block_id=None
-        self._loaded = False        
+        self._loaded = False
+        self._root = False        
         
     @property    
     def block_id(self):
@@ -55,12 +57,9 @@ class BTreeNode:
         if self.is_full():
             raise ValueError("Node is full")
 
-        pos = self.find_key_index(k)
-        #if the key is bigger than existing elements, insert it at last index
-        if pos == -1:
-            self._keys.insert(len(self._keys), k)    
-        else:
-            self._keys.insert(pos, k)
+        idx = self.find_free_index(k)
+        self._keys.insert(idx, k)    
+        
 
     def remove_key(self, index):
         """
@@ -74,7 +73,7 @@ class BTreeNode:
         """
         Adds a given child at its appropriate index 
         """
-        i = self.find_child_index(node._keys[0])
+        i = self.find_child_index(node.keys[0])
         self._children.insert(i, node)
 
 
@@ -95,11 +94,8 @@ class BTreeNode:
         """
         Finds a child node where the given key can be stored 
         """
-        i = self.find_key_index(key)
-        if i == -1:
-            return len(self._children)
-        else:
-            return i
+        return self.find_free_index(key)
+        
 
     def move_keys_and_children(self, index, target):
         """
@@ -147,46 +143,42 @@ class BTreeNode:
     def is_leaf(self):
         return len(self._children) == 0
 
-    def find_key_index(self, k):  
+    def set_as_root(self, val):
+        self._root = val    
+
+    def is_root(self):
+        return self._root   
+
+   
+    def find_free_index(self, key):
         """
-        Finds an index at which key can be inserted. It follows rules to find an index:
-        1) keys at 0 to i-1 are smaller than the key
-        2) keys at i+1 to n are greater than the key
-        """      
-        for i in range(len(self._keys)):
-            if k <= self._keys[i]:
+        Finds a free index at which new key can be inserted    
+        """        
+        for i, k  in enumerate(self._keys):
+            if k >= key:
+                return i
+
+        return len(self.keys)
+
+
+    def key_at(self, key):
+        """
+        Finds an index at whuch given key is found
+        """
+        for i, k in enumerate(self._keys):
+            if k == key:
                 return i
         return -1
-
-    def _find_free_child_index(self, node):
-        #print("find_free_child_index: node: ", node)
-        k = node._keys[0]
-        for i, ch in enumerate(self._children):
-            if k <= ch._keys[0]:
-                return i
-
-        return len(self._children)
-
-    def _find_child_index(self, key):
-        """
-        Finds a child node where the given key can be stored
-        """
-        for i in range(len(self._keys)):
-            if self._keys[i] >= key:
-                return i
-        return len(self._keys)
     
 
-    def __str__(self):
-        #s = []
-        #ks = [str(i) + ":" + str(v) for i, v in enumerate(self._keys)]
-        #s.append("keys => " + ", ".join(ks))
+    def __str__(self):        
+        keys = [str(k) for i, k in enumerate(self._keys)]
+        s = []
+        s.append("block_id: {}, keys: {}".format(self.block_id, keys))
+        s.append("\n")           
+        for i,c in enumerate(self.children):            
+            s.append("  child{}: {}".format(i,c))
 
-        #cs = []
-        #cs.append("Children => ")
-        #cs = [
-        #    str(i) + ":" + str(v._keys) for i, v in enumerate(self._children)
-        #]
-        #s.append("children => " + ", ".join(cs))
-        #return "\n".join(s)
-        return "Node{{ keys: {}, children:{} }}".format(self._keys, self._children)
+        return "".join(s)    
+        #return json.dumps(self, default= lambda o : o.__dict__)
+        #return "{{block_id: {}, keys: {}, children:{}}}".format(self.block_id,keys, children)
