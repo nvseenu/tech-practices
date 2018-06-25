@@ -21,12 +21,19 @@ module BTree
 
       @file = File.open(file_path, "rb+")
       @total_blocks = 0
+    rescue IOError => e
+      raise BlockIOError, "Unable to intialize block file due to an error: #{e.message}"
     end
 
     #  Inserts given bytes of data and returns a block id
+    #  Raises BlockIOError if any io issue is occured
     def create(data)
+      id = @total_blocks
       update(@total_blocks, data)
       @total_blocks += 1
+      id
+    rescue IOError => e
+      raise BlockIOError, "Unable to intialize block file due to an error: #{e.message}"
     end
 
     # Returns a bytes of data associtated with given  block id
@@ -38,8 +45,8 @@ module BTree
       bytes = data.unpack("c*")
       b = Block.from_bytes(bytes)
       b.data
-    rescue EOFError => e
-      raise BlockError, "Unable to read a block associated with id: #{block_id} due to error: #{e.message}"
+    rescue IOError => e
+      raise BlockIOError, "Unable to read a block associated with id: #{block_id} due to error: #{e.message}"
     end
 
     # Finds a bytes of data associated with given block id, and replaces it with given
@@ -49,7 +56,7 @@ module BTree
       @file.seek(off)
       @file.write(Block.new(data).to_bytes.pack("c*"))
     rescue IOError => e
-      raise BlockError, "Unable to update the block associated with id: #{block_id} due to error: #{e.message}"
+      raise BlockIOError, "Unable to update the block associated with id: #{block_id} due to error: #{e.message}"
     end
 
     # Deletes the block associtated with given block id

@@ -6,9 +6,9 @@ require_relative "helper"
 class TestNode < MiniTest::Test
   # Tests if given key can be added into a node ascendign order
   def test_add_key
-    n = BTree::Node.new
+    n = BTree::Node.new(4)
 
-    users = (1..10).map do |i|
+    users = (1..4).map do |i|
       User.new(i, "name#{i}", "g#{i}@gmail.com")
     end
 
@@ -19,5 +19,75 @@ class TestNode < MiniTest::Test
     end
     assert_equal(users, n.keys, "Keys are not matching")
   end
-end
 
+  # Tests if full? returns true when the node is full otherwise false
+  def test_full
+    n = BTree::Node.new(4)
+    (1..3).each do |i|
+      n.add_key(i)
+      assert(n.full? == false, "Node is full")
+    end
+
+    # Add a last key that makes node full.
+    n.add_key(4)
+    assert(n.full? == true, "Node is not full")
+  end
+
+  # Tests if leaf? returns true when there are no children, otherwise false
+  def test_leaf
+    n = BTree::Node.new(4)
+    assert(n.leaf? == true,
+           "Node is leaf as it has #{n.child_node_ids.length} children")
+    n.child_node_ids << 1
+    assert(n.leaf? == false,
+           "Node is not a leaf a it has #{n.child_node_ids.length} children")
+  end
+
+  # Tests if find_child_id() finds an appropriate child node id for
+  # given key
+  def test_find_child_node_id
+    n = BTree::Node.new(4)
+    # Add keys
+    [10, 25, 40, 50].each {|k| n.add_key(k) }
+    # Add child node ids
+    (1..5).each {|i| n.child_node_ids << i }
+
+    # Array of key with its expected child node id.
+    test_data = [[5, 1],
+                 [15, 2],
+                 [30, 3],
+                 [45, 4],
+                 [55, 5]]
+
+    test_data.each do |t|
+      key = t[0]
+      expected_child_id = t[1]
+      assert_equal(expected_child_id,
+                   n.find_child_node_id(key),
+                   "Expected child id is not found")
+    end
+  end
+
+  # Test if find_key_index() finds given key and returns its index
+  def test_find_key_index
+    n = BTree::Node.new(4)
+    # Add keys
+    [10, 25, 40, 50].each {|k| n.add_key(k) }
+
+    # Array of key with its expected child node id.
+    test_data = [[10, 0],
+                 [25, 1],
+                 [40, 2],
+                 [50, 3],
+                 [30, -1],
+                 [55, -1]]
+
+    test_data.each do |t|
+      key = t[0]
+      expected_index = t[1]
+      assert_equal(expected_index,
+                   n.find_key_index(key),
+                   "Expected key index is not found")
+    end
+  end
+end

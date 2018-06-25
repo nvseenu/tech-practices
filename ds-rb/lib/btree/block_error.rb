@@ -1,4 +1,4 @@
 module BTree
-  class BlockError < StandardError
+  class BlockIOError < StandardError
   end
 end
