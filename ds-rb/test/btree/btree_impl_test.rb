@@ -9,22 +9,22 @@ class BTreeTest < MiniTest::Test
   def setup
     metadata_file_stub = MetadataFileStub.new
     node_file_stub = NodeFileStub.new
-    @btree = BTree::BTreeImpl.new(4, metadata_file_stub, node_file_stub)
+    @btree = BTree::BTreeImpl.new(16, metadata_file_stub, node_file_stub)
   end
 
   # Tests if insert() can insert given key at appropriate node
   # by following BTree rules. 
   # We use find_value() to ensure the keys we inserted are found.
   def test_insert
-    (1..10).reverse_each do |k|
-      puts "----------<Inserting key: #{k}>-----------"
-      @btree.insert(k)
+   
+    total_keys = 100000
+    (1..total_keys).reverse_each do |k|      
+      @btree.insert(k)      
     end
 
-    assert_equal(10, @btree.length, "Length is not matching")
+    assert_equal(total_keys, @btree.length, "Length is not matching")
 
-    (1..10).reverse_each do |k|
-     puts "----------<Finding key: #{k}>-----------"
+    (1..total_keys).reverse_each do |k|     
      assert_equal(k, @btree.find_value(k), "Expected key is not found")
     end
   end
@@ -33,3 +33,4 @@ class BTreeTest < MiniTest::Test
     @btree.close
   end
 end
+

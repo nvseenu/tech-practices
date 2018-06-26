@@ -20,13 +20,13 @@ module BTree
       node = find_free_node(nil, @root, key)
       node.add_key(key)
       @node_file.write(node)
-      puts "[WRITE] node: #{node}"
+      #puts "[WRITE] node: #{node.id}"
       @length += 1
     end
 
     def find_value(key)
       load_root_if_required
-      puts "Root node: #{@root}"
+      #puts "Root node: #{@root}"
       node = find_node(@root, key)
       ki = node.find_key_index(key)
       if ki == -1
@@ -38,10 +38,11 @@ module BTree
 
     def find_node(node, key)
       return node if node.leaf?
-
+      return node if node.find_key_index(key) != -1        
+      
       cid = node.find_child_node_id(key)
       child = @node_file.read(cid)
-      puts "[READ] Child: #{child}"
+      #puts "[READ] Child: #{child.id}"
       find_node(child, key)
     end
 
@@ -52,16 +53,17 @@ module BTree
     private
 
     def find_free_node(parent, node, key)
+       #puts "find_free_node => parent: #{parent},\n node: #{node},\n key: #{key}"
       if node.full?
-        puts "Split the node as it is full"
+        #puts "Split the node as it is full"
         node = split(parent, node)
         @root = node if node.root?
       end
 
       unless node.leaf?
         cid = node.find_child_node_id(key)
-        child = @node_file.read(cid)
-        puts "[READ] Child: #{child}"
+        child = @node_file.read(cid)        
+        #puts "[READ] Child: #{child.id}"
         return find_free_node(node, child, key)
       end
 
@@ -71,6 +73,8 @@ module BTree
     def split(parent, node)
       median = node.keys.length / 2
       median_key = node.keys[median]
+      parent = BTree::Node.new(@keys_per_node, root: true) if parent.nil?
+      parent.add_key(median_key)
 
       # Create right node and move the keys that come after median index
       right = BTree::Node.new(@keys_per_node)
@@ -78,26 +82,35 @@ module BTree
       right_keys.each do |k|
         right.add_key(k)
       end
+      children = node.child_node_ids.slice(median+1, node.child_node_ids.length - median)
+      unless children == nil 
+        children.each_with_index do |idx, i|
+           right.child_node_ids.insert(i, idx) 
+           node.child_node_ids.delete(idx)
+        end
+      end   
 
+  
       right.id = @node_file.write(right)
-      puts "[WRITE] Right node: #{right}"
+      #puts "[WRITE] Right node: #{right.id}"
 
       # Delete the keys that are moved into the right node, from left node
       node.keys = node.keys.slice(0, median)
       node.root = false # This is not a root any more
       @node_file.write(node)
-      puts "[WRITE] Left node: #{node}"
+      #puts "[WRITE] Left node: #{node.id}"
 
-      parent = BTree::Node.new(@keys_per_node, root: true) if parent.nil?
-      parent.add_key(median_key)
-
+     
       # Add left and right nodes as children to the parent
-      [node, right].each do |n|
-        idx = parent.find_child_node_id_index(n.keys[0])
-        parent.child_node_ids[idx] = n.id
-      end
+      idx = parent.find_child_node_id_index(node.keys[0])
+      parent.child_node_ids[idx] = node.id                 
+
+
+      idx = parent.find_child_node_id_index(right.keys[0])
+      parent.child_node_ids.insert(idx, right.id)                 
+      #puts "child index to insert right node: #{idx} , id: #{right.id}"
       parent.id = @node_file.write(parent)
-      puts "[WRITE] parent node: #{parent}"
+      #puts "[WRITE] parent node: #{parent.id}"
       parent
     end
 
@@ -106,9 +119,9 @@ module BTree
 
       begin
         metadata = @metadata_file.read
-        puts "[READ] metadata: #{metadata}"
+        #puts "[READ] metadata: #{metadata}"
         @root = @node_file.read(metadata.root_node_id)
-        puts "[READ] #{@root}"
+        #puts "[READ] #{@root}"
       rescue NodeError => e
         puts e.to_s
         @root = Node.new(@keys_per_node, root: true)
