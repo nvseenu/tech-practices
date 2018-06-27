@@ -1,5 +1,5 @@
-require_relative "../../lib/btree/node_error"
-require_relative "../../lib/btree/metadata_file"
+require_relative "../../../lib/btree/node_error"
+require_relative "../../../lib/btree/metadata_file"
 
 # Instances of below classeses are used to insert into Node instance
 class User
@@ -23,6 +23,8 @@ end
 # A Stub to BlockFile class.
 # It can be plugged into NodeFile to test NodeFile functionality alone.
 class BlockFileStub
+  attr_reader :data_map
+
   def initialize
     @data_map = {}
   end

@@ -1,11 +1,11 @@
 require "minitest/autorun"
 
-require_relative "../../lib/btree"
-require_relative "../../lib/btree/block_file"
-require_relative "../../lib/btree/block_error"
+require_relative "../../../lib/btree"
+require_relative "../../../lib/btree/block_file"
+require_relative "../../../lib/btree/block_error"
 
 class BlockFileTest < MiniTest::Test
-  FILE_PATH = File.expand_path("../../temp/test-block-file-data.bin", __dir__)
+  FILE_PATH = File.expand_path("../../../temp/block-file-data.bin", __dir__)
 
   # Deletes a data file and instantiates BlockFile class
   # before every test begins

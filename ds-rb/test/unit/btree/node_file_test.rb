@@ -1,8 +1,8 @@
 require "minitest/autorun"
 
-require_relative "../../lib/btree"
-require_relative "../../lib/btree/block_file"
-require_relative "../../lib/btree/node_file"
+require_relative "../../../lib/btree"
+require_relative "../../../lib/btree/block_file"
+require_relative "../../../lib/btree/node_file"
 require_relative "helper"
 
 # Tests if nodes can be stored and reetrieved successfully.

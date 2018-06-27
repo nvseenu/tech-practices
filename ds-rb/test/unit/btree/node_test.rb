@@ -1,5 +1,5 @@
 require "minitest/autorun"
-require_relative "../../lib/btree"
+require_relative "../../../lib/btree"
 require_relative "helper"
 
 # Tests if Node class works as expected
@@ -88,6 +88,36 @@ class TestNode < MiniTest::Test
       assert_equal(expected_index,
                    n.find_key_index(key),
                    "Expected key index is not found")
+    end
+  end
+
+  def test_move_keys_and_child_node_ids
+    n = BTree::Node.new(4)
+    # Add keys and children
+    [10, 25, 40, 50].each {|k| n.add_key(k) }
+    [1, 2, 3, 4, 5].each {|i| n.child_node_ids << i }
+
+    t = BTree::Node.new(4)
+    n.move_keys_and_child_node_ids(t, 3)
+    assert_equal([10, 25, 40], n.keys, "Keys are mismatching")
+    assert_equal([1, 2, 3], n.child_node_ids, "Child node ids are mismatching")
+    assert_equal([50], t.keys, "Keys are mismatching in target node")
+    assert_equal([4, 5], t.child_node_ids, "Child node ids are mismatching in target node")
+  end
+
+  def move_keys_and_child_node_ids(node, right, median)
+    right_keys = node.keys.slice(median + 1, node.keys.length - median)
+    right_keys.each do |k|
+      right.add_key(k)
+    end
+
+    # Move the respective children to right node
+    children = node.child_node_ids.slice(median + 1, node.child_node_ids.length - median)
+    unless children.nil?
+      children.each_with_index do |idx, i|
+        right.child_node_ids.insert(i, idx)
+        node.child_node_ids.delete(idx)
+      end
     end
   end
 end

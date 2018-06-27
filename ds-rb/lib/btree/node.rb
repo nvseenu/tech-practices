@@ -60,6 +60,26 @@ module BTree
       @keys.length
     end
 
+    def move_keys_and_child_node_ids(target, index)
+      # puts "node: #{self} , target: #{target}"
+      si = index
+      ei = @keys.length - 1
+      keys = @keys.slice(si, ei - index + 1)
+      keys.each {|k| target.add_key(k) }
+      (si..ei).reverse_each {|i| @keys.delete_at(i) }
+
+      # Move the respective children to right node
+      si = index
+      ei = @child_node_ids.length - 1
+      children = @child_node_ids.slice(si, ei - index + 1)
+      unless children.nil?
+        children.each_with_index do |idx, i|
+          target.child_node_ids.insert(i, idx)
+        end
+      end
+      (si..ei).reverse_each {|i| @child_node_ids.delete_at(i) }
+    end
+
     # Compares its attributes against given one.
     # Returns an integer value
     #    -1 if it is greater than given one.
@@ -68,9 +88,9 @@ module BTree
     def <=>(other)
       res = @id <=> id
       if res.zero?
-        res
-      else
         @keys <=> other.keys
+      else
+        res
       end
     end
 
