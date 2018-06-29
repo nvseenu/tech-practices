@@ -116,7 +116,7 @@ module BTree
         # puts "[READ] metadata: #{@metadata}"
         @root = @node_file.read(@metadata.root_node_id)
         # puts "[READ] #{@root}"
-      rescue NodeError, BlockIOError => e
+      rescue NodeError, BlockIOError
         # puts "Error occured: #{e}"
         @root = Node.new(@keys_per_node, root: true)
         @root.id = @node_file.write(@root)

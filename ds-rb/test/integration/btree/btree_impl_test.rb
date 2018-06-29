@@ -3,6 +3,7 @@ require "benchmark"
 require_relative "../../../lib/btree"
 require_relative "../../../lib/btree/btree_impl"
 require_relative "../../../lib/btree/block_file"
+require_relative "../../../lib/btree/block_cache"
 require_relative "../../../lib/btree/node_file"
 require_relative "helper"
 
@@ -18,28 +19,37 @@ class BTreeImplTest < MiniTest::Test
   # Tests if insert() can store given set of User objects. It also
   # tests if find_value() can find all inserted records.
   def test_insert_and_find
-    total_keys = 1000
+    total_keys = 100
     users = (1..total_keys).map {|id| User.new(id, "name:#{id}", "#{id}@email.com") }
 
     # Insert given user records
-    btree = create_btree
-    users.reverse_each {|u| btree.insert(u) }
-    btree.close
+    open_btree do | btree|
+       users.reverse_each.each {  |u| btree.insert(u) }
+    end
+    puts "Inserted #{total_keys} keys"
 
     # Check all inserted records are found
-    btree = create_btree
-    users.each do |u|
-      actual_user = btree.find_value(u)
-      assert_equal(u, actual_user, "Key not found")
+    open_btree do | btree| 
+      users.each do |u|
+        actual_user = btree.find_value(u)
+        assert_equal(u, actual_user, "Key not found")        
+      end
     end
-    btree.close
+
+    puts "Ensured that all those #{total_keys} keys inserted are found"
+
   end
 
-  def create_btree
-    block_file = BTree::BlockFile.new(4086, DATA_FILE_PATH)
+  def open_btree
+    block_file = BTree::BlockFile.new(1_048_576, DATA_FILE_PATH)
+    block_file = BTree::BlockFileWithCache.new(block_file, 4)
     node_file = BTree::NodeFile.new(block_file)
     metadata_file = BTree::MetadataFile.new(BTree::BlockFile.new(1024, META_FILE_PATH))
-    BTree::BTreeImpl.new(8, metadata_file, node_file)
+    btree = BTree::BTreeImpl.new(8, metadata_file, node_file)
+
+    yield btree
+
+    btree.close
   end
 
   def teardown; end
