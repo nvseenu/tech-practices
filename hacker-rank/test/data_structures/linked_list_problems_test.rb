@@ -24,6 +24,18 @@ class LinkedListProblemsTest < MiniTest::Test
     assert_equal([1, 2, 3, 4, 5], DataStructures.to_a(head), 'Wrong node got deleted')
   end
 
+  def test_reverse
+    ls = create_linked_list([1, 2, 3, 4, 5])
+    DataStructures.reverse(ls.head)
+    assert_equal([5, 4, 3, 2, 1], DataStructures.to_a(ls.head), 'List is not reversed')
+  end
+
+  def test_reverse_for_even_size
+    ls = create_linked_list([1, 2, 3, 4])
+    DataStructures.reverse(ls.head)
+    assert_equal([4, 3, 2, 1], DataStructures.to_a(ls.head), 'List is not reversed')
+  end
+
   def create_linked_list(items)
     ls = DataStructures::SinglyLinkedList.new
     items.each { |item| ls.insert_node item }

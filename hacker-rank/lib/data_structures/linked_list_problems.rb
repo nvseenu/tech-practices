@@ -35,7 +35,7 @@ module DataStructures
     until n.nil?
       a << n.data
       n = n.next
-     end
+    end
     a
   end
 
@@ -65,9 +65,46 @@ module DataStructures
   end
 
   # Print a linked list in reverse order
-  def self.reversePrint(head) 
+  def self.reversePrint(head)
     return if head.nil?
     reversePrint(head.next)
     puts head.data
+  end
+
+  # It reverses the list by swapping data, instead of repointing "next" fields.
+  def self.reverse(head)
+    _reverse(head, head)
+  end
+
+  def self._reverse(current, head)
+    return head if current.nil?
+
+    h = _reverse(current.next, head)
+    # when head is nil means, we should stop swapping
+    return nil if h.nil?
+
+    # swap data
+    t = h.data
+    h.data = current.data
+    current.data = t
+
+    # For odd sized list, if head pointer is equal to current pointer,
+    # stop swapping going forward
+
+    # For even sized list, next of head is equal to current pointer
+    # stop swapping going forward
+    return nil if h.next == current || h == current
+
+    h.next
+  end
+
+  def self.print_list(head)
+    n = head
+    until n.nil?
+      print n.data
+      print ' '
+      n = n.next
+    end
+    puts ''
   end
 end
