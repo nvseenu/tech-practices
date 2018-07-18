@@ -63,4 +63,11 @@ module DataStructures
     end
     n
   end
+
+  # Print a linked list in reverse order
+  def self.reversePrint(head) 
+    return if head.nil?
+    reversePrint(head.next)
+    puts head.data
+  end
 end
