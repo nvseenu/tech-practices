@@ -1,0 +1,54 @@
+<html>
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gitgraph.js/1.12.0/gitgraph.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/gitgraph.js/1.12.0/gitgraph.css" />
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+
+
+
+</head>
+
+<body>
+<canvas id="gitGraph"></canvas>
+
+
+
+<script>
+
+var gitgraph = new GitGraph({
+  template: "metro",
+  reverseArrow: true,
+  orientation: "vertical",
+  mode: "compact"
+});
+
+
+loadCommits("master")
+loadCommits("dev")
+
+
+function loadCommits(branch){
+	var br = gitgraph.branch(branch);
+	$.get( "/"+branch+"/commits", function( commits ) {
+		 console.log("data =>", commits);
+          commits.forEach(function(c){
+          	 console.log("c = ", c);
+         	 br.commit({
+  				dotColor: "white",
+  				dotSize: 5,
+  				dotStrokeWidth: 10,
+  				sha1: c.id,
+  				message: c.message,
+  				author: c.author
+			});
+         })   
+    }); 	
+}
+
+</script>
+</body>
+
+</html>
