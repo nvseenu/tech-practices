@@ -8,6 +8,7 @@ module GitCommitTree
     class Tree
       def initialize
         @branch_heads = {}
+        @commits = {}
       end
 
       #
@@ -20,43 +21,30 @@ module GitCommitTree
       #  and adds given commit rigt next to it.
       #
 
-      def add_commit(commit, parent_branch_name=nil, parent_commit_id=nil)
+      def add_commit(commit)
         raise "Arg commit is nil" if commit.nil?
         raise "id field is nil in commit arguement" if commit.id.nil?
-        branch_name = commit.branch.to_sym
-        branch_head = @branch_heads[branch_name]
+        branch_name = commit.branch.to_sym        
+
         # If there is no branches in the tree,
-        # insert it by adding given branch.
-        if @branch_heads.length.zero?
-          @branch_heads[branch_name] = Node.new(branch_head, commit)
+        # insert it by adding given branch.        
+        if @branch_heads.length.zero?  
+          node = Node.new(commit)        
+          @branch_heads[branch_name] = node
+          @commits[commit.id] = node
           return
         end
 
-        # If branch for the given commit is already found,
-        # then update its head
-        if @branch_heads.key? branch_name
-          @branch_heads[branch_name] = Node.new(branch_head, commit)
-          return
-        elsif parent_branch_name.nil? 
-          @branch_heads[branch_name] = Node.new(nil, commit)
-          return
+        node = nil  
+        if @commits.key? commit.id 
+          node = @commits[commit.id]  
+        else
+          branch_head = @branch_heads[branch_name]
+          node = Node.new(commit, [branch_head])          
+          @commits[commit.id] = node
         end
 
-        # If parent_branch_name is passed, ensure if it exists in the tree
-        raise "Given parent branch:#{parent_branch_name} is not found" unless @branch_heads.key? parent_branch_name
-
-        parent_branch_head = @branch_heads[parent_branch_name]
-
-        # If parent commit id is nill, just insert
-        # given commit next to head of the parent branch
-        if parent_commit_id.nil?
-          @branch_heads[branch_name] = Node.new(parent_branch_head, commit)
-          return
-        end
-
-        parent_branch_head = find_commmit_node(parent_branch_head, parent_commit_id)
-        raise "Given commit id: #{parent_commit_id} is invalid" if parent_branch_head.nil?
-        @branch_heads[branch_name] = Node.new(parent_branch_head, commit)
+        @branch_heads[branch_name] = node
       end
 
       #
@@ -91,11 +79,11 @@ module GitCommitTree
     end
 
     class Node
-      attr_reader :parent, :commit
+      attr_reader :commit, :parents
 
-      def initialize(parent, commit)
-        @parent = parent
+      def initialize(commit, parents=[])        
         @commit = commit
+        @parents = parents
       end
 
       def to_s
@@ -114,7 +102,7 @@ module GitCommitTree
       def each
         until @current.nil?
           yield @current.commit
-          @current = @current.parent
+          @current = @current.parents[0]
         end
       end
     end

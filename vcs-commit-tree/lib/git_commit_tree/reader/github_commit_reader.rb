@@ -36,7 +36,7 @@ module GitCommitTree
           commits = cs.map { |c| commit(branch, c) }
           branch_commits.concat(commits)
           puts "Loaded commits: #{branch_commits.length}"
-          if  commits.last.initial_commit?
+          if  commits.last.initial?
             stop = true
           else 
             sha = commits.last.parents[0]
@@ -74,7 +74,13 @@ module GitCommitTree
         date = committer["date"]
         email = committer["email"]
         parents = raw_commit["parents"].map { |p| p['sha'] }
-        GitCommitTree::Core::Commit.new(id, message, date, branch_name, email, parents)
+        GitCommitTree::Core::Commit.new(
+          id: id, 
+          message: message,
+          date: date, 
+          branch: branch_name,
+          author: email,
+          parent_ids: parents)
       end
     end
 

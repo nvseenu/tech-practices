@@ -1,12 +1,10 @@
-require 'json'
-
 module GitCommitTree
   module Core
     class Commit
       include Enumerable
-      attr_reader :id, :message, :date, :branch, :author, :parents
+      attr_reader :id, :message, :date, :branch, :author, :parent_ids
 
-      def initialize(id, message, date, branch, author, parents)
+      def initialize(id:, message:, date:, branch:, author:, parent_ids: [])
         raise "Arg id is nil" if id.nil?
         raise "Arg message is nil" if message.nil?
         raise "Arg date is nil" if date.nil?
@@ -17,30 +15,32 @@ module GitCommitTree
         @message = message
         @date = date
         @branch = branch
-        @author = author
-        @parents = parents
+        @author = author        
+        @parent_ids = parent_ids        
       end
 
-      def initial_commit?
-         @parents.empty?
+      def initial?
+         @parent_ids.empty?
       end
 
       def <=>(other)
         @id <=> other.id
-      end
+      end     
 
       def to_s
-        "Commit { id: #{@id}, message: #{@message}, date: #{@date}, branch: #{@branch}, author: #{@author}, parents: #{@parents}"
+        "Commit { id: #{@id}, message: #{@message}, 
+                  date: #{@date}, branch: #{@branch}, 
+                  author: #{@author}, parent_ids: #{@parent_ids}"                  
       end
 
       def to_h
         {id: @id,
-         message: @message}         
-      end
-
-      def to_json
-        JSON.dump(to_h)  
-      end
+         message: @message,
+         date: @date,
+         branch: @branch,
+         author: @author,
+         parent_ids: @parent_ids}         
+      end     
     end
   end
 end
