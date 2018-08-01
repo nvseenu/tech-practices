@@ -1,5 +1,8 @@
 module GitCommitTree
   module Core
+    #
+    #  This class represents a branch in git repository
+    #
     class Branch
       attr_reader :name, :date, :commit_id
 

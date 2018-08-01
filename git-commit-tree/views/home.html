@@ -1,0 +1,165 @@
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gitgraph.js/1.12.0/gitgraph.min.js">
+    </script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/gitgraph.js/1.12.0/gitgraph.css" />
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous">
+    </script>
+
+</head>
+
+<body>
+    <div id="status">
+        <span> </span>
+    </div>
+    <div>
+        Repository: <input type="text" name="repo_name" value="" />
+        <input id="loadBtn" type="button" value="Load" />
+
+    </div>
+
+    <canvas id="gitGraph" width="100%"></canvas>
+
+    <script>
+        $(document).ready(function() {
+            $("#loadBtn").click(function(e) {
+                var repo = $("input[name='repo_name']").val()                
+                $('#status').html("<span>Loading..... Please wait...</span>")
+                loadBranches(repo)
+            })
+        })
+
+
+        var myTemplateConfig = {
+            //colors: [ "#F00", "#0F0", "#00F" ], // branches colors, 1 per column
+            branch: {
+                lineWidth: 10,
+                spacingX: 20,
+                showLabel: true, // display branch names on graph
+            },
+            commit: {
+                spacingY: -40,
+                dot: {
+                    size: 12
+                },
+                message: {
+                    displayAuthor: false,
+                    displayBranch: false,
+                    displayHash: false,
+                    font: "normal 12pt Arial"
+                },
+                shouldDisplayTooltipsInCompactMode: false, // default = true
+                tooltipHTMLFormatter: function(commit) {
+                    return "" + commit.sha1 + "" + ": " + commit.message;
+                }
+            }
+        };
+        var myTemplate = new GitGraph.Template(myTemplateConfig);
+
+        var gitgraph = new GitGraph({
+            template: myTemplate,
+            reverseArrow: true,
+            orientation: "vertical-reverse"
+            //mode: "compact"
+        });
+
+        var branches = {};
+        var commits = {};
+
+
+        function loadBranches(repo) {
+
+            $.get("/" + repo + "/branches", function(branchData) {
+
+                //Remove all existing branches from the graph
+                Object.keys(branches).forEach(function(k) {
+                    branches[k].delete()
+                })
+                // Clear global branches and commits
+                branches = {}
+                commits = {}
+
+                //Reinitialize a git graph as there is no rigth way to clear
+                // the graph
+                gitgraph = new GitGraph({
+                    template: myTemplate,
+                    reverseArrow: true,
+                    orientation: "vertical-reverse"
+                    //mode: "compact"
+                });
+
+                $('#status').html("")
+                $('#status').append("<span> Loading " + branchData.length + " branches..</span><br/>")
+                branchData.forEach(function(b) {
+                    loadCommits(repo, b)
+                })
+            });
+        }
+
+
+        function loadCommits(repo, branch_name) {
+
+            $.get("/" + repo + "/" + branch_name + "/commits", function(commitsData) {
+                commitsData.forEach(function(c) {
+                    if (commits[c.id] !== undefined) {
+                        console.log(c.id, " is already found....")
+                        return;
+                    }
+                    var br = createBranchIfNeeded(c);
+                    branches[c.branch] = br;
+                    br.commit({
+                        dotColor: "white",
+                        dotSize: 5,
+                        dotStrokeWidth: 10,
+                        sha1: c.id,
+                        message: c.message,
+                        author: c.author,
+                        messageDisplay: true
+                    });
+                    var recentCommit = br.commits[(br.commits.length == 0) ? 0 : br.commits.length - 1]
+                    commits[c.id] = recentCommit
+                    console.log("Added commit: ", c.id)
+                })
+                $('#status').append("<span> Loaded branch: " + branch_name + "</span><br/>")
+            });
+        }
+         
+
+        // Creates a branch if it is not found. 
+        // if the branch is found, it is taken from "branches" cache.
+        // if the branch is not found, but its parent branch is found. 
+        // then it represents a branching use case.
+        // So we need to find out a parent branch and we need to
+        // create a new branch out of it through gitgraph.
+        function createBranchIfNeeded(c) {
+            var br = null;
+            if (branches[c.branch] !== undefined) {
+                //console.log("Branch is already found")
+                br = branches[c.branch]
+            } else {
+                if (c.parent_ids.length == 0) {
+                    //console.log("crated new branch ", c.branch, " as parent is empty")
+                    br = gitgraph.branch(c.branch)
+                } else {
+                    var cid = c.parent_ids[0]
+                    var parentCommit = commits[cid]
+                    if (parentCommit !== undefined) {
+                        // console.log("created new branch from parent", parentCommit.branch.name)
+                        br = branches[parentCommit.branch.name].branch({
+                            name: c.branch,
+                            parentCommit: parentCommit
+                        })
+                        branches[c.branch] = br;
+                    } else {
+                        //console.log("WARNING --- crated new branch as parent commit not found")
+                        br = gitgraph.branch(c.branch)
+                    }
+                }
+            }
+            return br;
+        }
+    </script>
+</body>
+
+</html>

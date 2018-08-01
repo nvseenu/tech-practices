@@ -4,21 +4,66 @@ require_relative "../../../../lib/git_commit_tree/core"
 class TestTree < MiniTest::Test
   def setup
     @master_commits = [
-      GitCommitTree::Core::Commit.new("mc1", "commit", Time.now, :master, "user"),
-      GitCommitTree::Core::Commit.new("mc2", "commit", Time.now, :master, "user"),
-      GitCommitTree::Core::Commit.new("mc3", "commit", Time.now, :master, "user"),
-      GitCommitTree::Core::Commit.new("mc4", "commit", Time.now, :master, "user"),
-      GitCommitTree::Core::Commit.new("mc5", "commit", Time.now, :master, "user")
+      GitCommitTree::Core::Commit.new(
+        id: "mc1", 
+        message: "commit",
+        date: Time.now,
+        branch: "master",
+        author: "user"),
+      GitCommitTree::Core::Commit.new(
+        id: "mc2", 
+        message: "commit",
+        date: Time.now,
+        branch: "master",
+        author: "user"),
+      GitCommitTree::Core::Commit.new(
+        id: "mc3", 
+        message: "commit",
+        date: Time.now,
+        branch: "master",
+        author: "user"),
+      GitCommitTree::Core::Commit.new(
+        id: "mc4", 
+        message: "commit",
+        date: Time.now,
+        branch: "master",
+        author: "user"),
+      GitCommitTree::Core::Commit.new(
+        id: "mc5", 
+        message: "commit",
+        date: Time.now,
+        branch: "master",
+        author: "user"),
     ]
 
     @development_commits = [
-      GitCommitTree::Core::Commit.new("dc1", "commit", Time.now, :development, "user"),
-      GitCommitTree::Core::Commit.new("dc2", "commit", Time.now, :development, "user")
+      GitCommitTree::Core::Commit.new(
+        id: "dc1", 
+        message: "commit",
+        date: Time.now,
+        branch: "development",
+        author: "user"),
+      GitCommitTree::Core::Commit.new(
+        id: "dc2", 
+        message: "commit",
+        date: Time.now,
+        branch: "development",
+        author: "user"),
     ]
 
     @stage_commits = [
-      GitCommitTree::Core::Commit.new("sc1", "commit", Time.now, :stage, "user"),
-      GitCommitTree::Core::Commit.new("sc2", "commit", Time.now, :stage, "user")
+      GitCommitTree::Core::Commit.new(
+        id: "sc1", 
+        message: "commit",
+        date: Time.now,
+        branch: "stage",
+        author: "stage"),
+      GitCommitTree::Core::Commit.new(
+        id: "sc2", 
+        message: "commit",
+        date: Time.now,
+        branch: "stage",
+        author: "stage"),
     ]
   end
 
@@ -33,7 +78,7 @@ class TestTree < MiniTest::Test
 
     # Get all commits from the tree instance
     commits = tree.commits(:master).to_a
-    assert_commits(@master_commits.reverse, commits)
+    assert_commits(@master_commits, commits)
   end
 
   #
@@ -46,15 +91,16 @@ class TestTree < MiniTest::Test
   def test_add_commit_for_child_branch
     tree = GitCommitTree::Core::Tree.new
     @master_commits.each {|c| tree.add_commit c }
-    @development_commits.each {|c| tree.add_commit(c, :master) }
+    @development_commits.each {|c| tree.add_commit c}
 
     # Get all commits from the tree instance
     commits = tree.commits(:master).to_a
-    assert_commits(@master_commits.reverse, commits)
+    assert_commits(@master_commits, commits)
 
     commits = tree.commits(:development).to_a
+    puts "dev commits :: #{commits}"
     exp_commits = @master_commits + @development_commits
-    assert_commits(exp_commits.reverse, commits)
+    assert_commits(exp_commits, commits)
   end
 
   #

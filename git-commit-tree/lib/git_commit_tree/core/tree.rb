@@ -3,22 +3,29 @@ require_relative "./commit"
 module GitCommitTree
   module Core
     #
-    # This class represents commits of a version control system.
+    # This class represents entire commits of a git repository along with various
+    # branches.
     #
     class Tree
       def initialize
         @branch_heads = {}
+
+        #
+        # It keeps track of all commits by its id (sha).        
+        # It is helpful for the use cases such as creatign new branch from another one,
+        # and merging branches.        
+        #
         @commits = {}
       end
 
       #
       #  Adds given commit right next to head of the given branch.
-      #
-      #  If we pass parent_branch_name, it finds out a head of parent branch and
-      #  adds the commit right next to it.
-      #
-      #  If we pass parent_branch_name and commit_id, it finds the specific commit id
-      #  and adds given commit rigt next to it.
+      #  if given commit is already found, it will not create a new link. 
+      #  Instead, simply updates a branch head with the link
+      #  
+      #  If the commit is not found, new link between previous commit and
+      #  current one will be created, and the link will be updated in 
+      #  respective branch head
       #
 
       def add_commit(commit)
@@ -26,8 +33,8 @@ module GitCommitTree
         raise "id field is nil in commit arguement" if commit.id.nil?
         branch_name = commit.branch.to_sym        
 
-        # If there is no branches in the tree,
-        # insert it by adding given branch.        
+        # Intially , the tree will be empty. 
+        # So we can insert given commit directly
         if @branch_heads.length.zero?  
           node = Node.new(commit)        
           @branch_heads[branch_name] = node
@@ -60,22 +67,9 @@ module GitCommitTree
       def commits(branch)
         raise "Given branch: #{branch} is not found in this repository" unless @branch_heads.key? branch.to_sym
         head = @branch_heads[branch.to_sym]
-        puts "head = #{head}"
         CommitIterator.new(head)
       end
 
-      private
-
-      # Finds node contains given commit id and returns it
-      def find_commmit_node(branch_head, commit_id)
-        found = false
-        n = branch_head
-        while !found && !n.nil?
-          found = true if n.commit.id == commit_id
-          n = n.parent
-        end
-        n
-      end
     end
 
     class Node
