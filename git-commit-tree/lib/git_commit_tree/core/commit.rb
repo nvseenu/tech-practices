@@ -4,7 +4,7 @@ module GitCommitTree
     # This class represents a commit in git repository.
     #
     class Commit
-      include Enumerable
+      include Comparable
       attr_reader :id, :message, :date, :branch, :author, :parent_ids
 
       def initialize(id:, message:, date:, branch:, author:, parent_ids: [])

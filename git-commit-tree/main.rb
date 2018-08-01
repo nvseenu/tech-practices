@@ -3,8 +3,8 @@ require_relative "./lib/git_commit_tree/reader"
 require 'sinatra'
 require 'json'
 
-USER_NAME = "nvseenu"
-PASSWORD ="C0ntr01@16"
+USER_NAME = "xxxxxx"
+PASSWORD = "xxxxxx"
 client = GitCommitTree::Reader::GithubClient.new(USER_NAME, PASSWORD)
 
 repos = {}

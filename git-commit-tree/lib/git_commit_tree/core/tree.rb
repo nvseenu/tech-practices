@@ -33,7 +33,7 @@ module GitCommitTree
         raise "id field is nil in commit arguement" if commit.id.nil?
         branch_name = commit.branch.to_sym        
 
-        # Intially , the tree will be empty. 
+        # Initially , the tree will be empty. 
         # So we can insert given commit directly
         if @branch_heads.length.zero?  
           node = Node.new(commit)        

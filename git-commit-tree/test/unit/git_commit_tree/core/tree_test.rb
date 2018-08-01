@@ -38,6 +38,18 @@ class TestTree < MiniTest::Test
 
     @development_commits = [
       GitCommitTree::Core::Commit.new(
+        id: "mc1", 
+        message: "commit",
+        date: Time.now,
+        branch: "development",
+        author: "user"),
+      GitCommitTree::Core::Commit.new(
+        id: "mc2", 
+        message: "commit",
+        date: Time.now,
+        branch: "development",
+        author: "user"),
+      GitCommitTree::Core::Commit.new(
         id: "dc1", 
         message: "commit",
         date: Time.now,
@@ -51,7 +63,20 @@ class TestTree < MiniTest::Test
         author: "user"),
     ]
 
-    @stage_commits = [
+
+    @stage_commits =  [
+      GitCommitTree::Core::Commit.new(
+        id: "mc1", 
+        message: "commit",
+        date: Time.now,
+        branch: "stage",
+        author: "user"),
+      GitCommitTree::Core::Commit.new(
+        id: "mc2", 
+        message: "commit",
+        date: Time.now,
+        branch: "stage",
+        author: "user"),
       GitCommitTree::Core::Commit.new(
         id: "sc1", 
         message: "commit",
@@ -72,7 +97,7 @@ class TestTree < MiniTest::Test
   #     mc1 <- mc2 <- mc3
   #
   def test_add_commit
-    # Insert all commits
+    # Insert all commits    
     tree = GitCommitTree::Core::Tree.new
     @master_commits.each {|c| tree.add_commit c }
 
@@ -98,9 +123,7 @@ class TestTree < MiniTest::Test
     assert_commits(@master_commits, commits)
 
     commits = tree.commits(:development).to_a
-    puts "dev commits :: #{commits}"
-    exp_commits = @master_commits + @development_commits
-    assert_commits(exp_commits, commits)
+    assert_commits(@development_commits, commits)
   end
 
   #
@@ -115,42 +138,19 @@ class TestTree < MiniTest::Test
   #
   def test_add_commit_for_multiple_branches
     tree = GitCommitTree::Core::Tree.new
-    @master_commits[0, 3].each {|c| tree.add_commit c }
-    @development_commits.each {|c| tree.add_commit(c, :master) }
-    @stage_commits.each {|c| tree.add_commit(c, :master) }
-    @master_commits[3, 2].each {|c| tree.add_commit c }
+    @master_commits.each {|c| tree.add_commit c }
+    @development_commits.each {|c| tree.add_commit c }
+    @stage_commits.each {|c| tree.add_commit c }    
 
     # Get all commits from the tree instance
     commits = tree.commits(:master).to_a
-    assert_commits(@master_commits.reverse, commits)
+    assert_commits(@master_commits, commits)
 
-    commits = tree.commits(:development).to_a
-    exp_commits = @master_commits[0, 3] + @development_commits
-    assert_commits(exp_commits.reverse, commits)
+    commits = tree.commits(:development).to_a    
+    assert_commits(@development_commits, commits)
 
     commits = tree.commits(:stage).to_a
-    exp_commits = @master_commits[0, 3] + @stage_commits
-    assert_commits(exp_commits.reverse, commits)
-  end
-
-  #
-  #   Test if add_commit inserts given commit in below order
-  #
-  #
-  #    mc1 <- mc2 <- mc3 <- mc4 <- mc5
-  #             \
-  #              dc1 <- dc2
-  #
-  #
-  def test_add_commit_at_specific_commit_id
-    tree = GitCommitTree::Core::Tree.new
-    @master_commits.each {|c| tree.add_commit c }
-    mc2 = @master_commits[2]
-    @development_commits.each {|c| tree.add_commit(c, :master, mc2.id) }
-
-    commits = tree.commits(:development).to_a
-    exp_commits = @master_commits[0, 2] + @development_commits
-    assert_commits(exp_commits.reverse, commits)
+    assert_commits(@stage_commits, commits)
   end
 
   def assert_commits(commits1, commits2)
