@@ -1,54 +1,126 @@
 <html>
+
 <head>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gitgraph.js/1.12.0/gitgraph.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/gitgraph.js/1.12.0/gitgraph.css" />
-<script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gitgraph.js/1.12.0/gitgraph.min.js">
+    </script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/gitgraph.js/1.12.0/gitgraph.css" />
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous">
+    </script>
 
 
 
 </head>
 
 <body>
-<canvas id="gitGraph"></canvas>
+    <canvas id="gitGraph"></canvas>
+
+    <script>
+    var myTemplateConfig = {
+  //colors: [ "#F00", "#0F0", "#00F" ], // branches colors, 1 per column
+  branch: {
+    lineWidth: 10,
+    spacingX: 70,
+    showLabel: true,                  // display branch names on graph
+  },
+  commit: {
+    spacingY: -80,
+    dot: {
+      size: 12
+    },
+    message: {
+      displayAuthor: false,
+      displayBranch: false,
+      displayHash: false,
+      font: "normal 12pt Arial"
+    },
+    shouldDisplayTooltipsInCompactMode: false, // default = true
+    tooltipHTMLFormatter: function ( commit ) {
+      return "" + commit.sha1 + "" + ": " + commit.message;
+    }
+  }
+};
+var myTemplate = new GitGraph.Template( myTemplateConfig );
+
+        var gitgraph = new GitGraph({
+            template: myTemplate, 
+            reverseArrow: true,
+            orientation: "vertical-reverse"
+            //mode: "compact"
+        });
+
+        var branches = {};
+        var commits = {};
+
+        loadBranches()        
+
+         function loadBranches() {
+
+            $.get("/branches", function(branchData) {
+                branchData.forEach(function(b) {
+                    console.log("b = ", b);
+                    loadCommits(b)
+                })
+            });
+        }
 
 
+        function loadCommits(branch_name) {
 
-<script>
+            $.get("/" + branch_name + "/commits", function(commitsData) {
+                commitsData.forEach(function(c) {
+                    console.log("c = ", c);
+                    if (commits[c.id] !== undefined) {
+                        console.log(c.id, " is already found....")
+                        return;
+                    }
+                    var br = createBranchIfNeeded(c);
+                    console.log("Expected branch name: ", c.branch, " and actual branch: ", br.name)
+                    branches[c.branch] = br;
+                    br.commit({
+                        dotColor: "white",
+                        dotSize: 5,
+                        dotStrokeWidth: 10,
+                        sha1: c.id,
+                        message: c.message,
+                        author: c.author,
+                        messageDisplay: true
+                    });
+                    var recentCommit = br.commits[(br.commits.length == 0) ? 0 : br.commits.length - 1]
+                    commits[c.id] = recentCommit
+                    console.log("Added commit: ", c.id)
+                })
+            });
+        }
 
-var gitgraph = new GitGraph({
-  template: "metro",
-  reverseArrow: true,
-  orientation: "vertical",
-  mode: "compact"
-});
 
-
-loadCommits("master")
-loadCommits("dev")
-
-
-function loadCommits(branch){
-	var br = gitgraph.branch(branch);
-	$.get( "/"+branch+"/commits", function( commits ) {
-		 console.log("data =>", commits);
-          commits.forEach(function(c){
-          	 console.log("c = ", c);
-         	 br.commit({
-  				dotColor: "white",
-  				dotSize: 5,
-  				dotStrokeWidth: 10,
-  				sha1: c.id,
-  				message: c.message,
-  				author: c.author
-			});
-         })   
-    }); 	
-}
-
-</script>
+        function createBranchIfNeeded(c) {
+            var br = null;
+            if (branches[c.branch] !== undefined) {
+                console.log("Branch is already found")
+                br = branches[c.branch]
+            } else {
+                if (c.parent_ids.length == 0) {
+                    console.log("crated new branch ", c.branch, " as parent is empty")
+                    br = gitgraph.branch(c.branch)
+                } else {
+                    var cid = c.parent_ids[0]
+                    var parentCommit = commits[cid]
+                    if (parentCommit !== undefined) {
+                        console.log("created new branch from parent", parentCommit.branch.name)
+                        br = branches[parentCommit.branch.name].branch({
+                            name: c.branch,
+                            parentCommit: parentCommit
+                        })
+                        branches[c.branch] = br;
+                    } else {
+                        console.log("WARNING --- crated new branch as parent commit not found")
+                        br = gitgraph.branch(c.branch)
+                    }
+                }
+            }
+            return br;
+        }
+    </script>
 </body>
 
 </html>

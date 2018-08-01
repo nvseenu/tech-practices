@@ -51,8 +51,7 @@ module GitCommitTree
       #  Returns list of branches being tracked
       #
       def branches
-        ks = @branch_heads.keys.find_all { |k| k != :master }
-        ks.prepend(:master)
+        @branch_heads.keys
       end
 
       #
@@ -61,6 +60,7 @@ module GitCommitTree
       def commits(branch)
         raise "Given branch: #{branch} is not found in this repository" unless @branch_heads.key? branch.to_sym
         head = @branch_heads[branch.to_sym]
+        puts "head = #{head}"
         CommitIterator.new(head)
       end
 
@@ -100,10 +100,15 @@ module GitCommitTree
       end
 
       def each
-        until @current.nil?
-          yield @current.commit
-          @current = @current.parents[0]
+        cs = []
+        current = @current
+        while !current.nil?
+          cs << current.commit
+          current = current.parents[0]
         end
+        cs.reverse.each do |c|
+          yield c
+        end  
       end
     end
   end
