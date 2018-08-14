@@ -1,10 +1,20 @@
-package com.store.grocerysystem.domain;
+package com.store.grocerysystem.domain.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.store.grocerysystem.domain.Bill;
+import com.store.grocerysystem.domain.Cart;
+import com.store.grocerysystem.domain.Customer;
+import com.store.grocerysystem.domain.Discount;
+import com.store.grocerysystem.domain.Item;
+import com.store.grocerysystem.domain.ItemEntries;
+import com.store.grocerysystem.domain.ItemEntry;
+import com.store.grocerysystem.domain.OrderSummary;
+import com.store.grocerysystem.domain.PaymentType;
 
 public class Store {
 

@@ -1,6 +1,6 @@
 package com.store.grocerysystem.domain;
 
-/*package*/ class ItemEntry {
+public class ItemEntry {
 
 	private Integer id;
 	private Item item;

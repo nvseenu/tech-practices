@@ -1,7 +1,13 @@
-package com.store.grocerysystem.domain;
+package com.store.grocerysystem.domain.service;
 
 import java.util.Calendar;
 import java.util.List;
+
+import com.store.grocerysystem.domain.Bill;
+import com.store.grocerysystem.domain.Cart;
+import com.store.grocerysystem.domain.Customer;
+import com.store.grocerysystem.domain.Discount;
+import com.store.grocerysystem.domain.ItemSummary;
 
 public class Register {
 

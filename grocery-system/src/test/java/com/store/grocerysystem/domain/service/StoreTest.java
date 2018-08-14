@@ -1,4 +1,4 @@
-package com.store.grocerysystem.domain;
+package com.store.grocerysystem.domain.service;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,6 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+
+import com.store.grocerysystem.domain.Bill;
+import com.store.grocerysystem.domain.Cart;
+import com.store.grocerysystem.domain.Customer;
+import com.store.grocerysystem.domain.Discount;
+import com.store.grocerysystem.domain.DiscountType;
+import com.store.grocerysystem.domain.Item;
+import com.store.grocerysystem.domain.OrderSummary;
+import com.store.grocerysystem.domain.PaymentType;
+import com.store.grocerysystem.domain.service.DiscountStrategy;
+import com.store.grocerysystem.domain.service.DiscountStrategyImpl;
+import com.store.grocerysystem.domain.service.Register;
+import com.store.grocerysystem.domain.service.Store;
 
 public class StoreTest {
 

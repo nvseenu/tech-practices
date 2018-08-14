@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/*package*/ class ItemEntries {
+public class ItemEntries {
 
 	private List<ItemEntry> entries = new ArrayList<>();
 

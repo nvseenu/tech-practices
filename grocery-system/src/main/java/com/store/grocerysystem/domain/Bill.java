@@ -2,7 +2,6 @@ package com.store.grocerysystem.domain;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 
 public class Bill {
 
@@ -62,7 +61,7 @@ public class Bill {
 				+ itemSummary + ", discountSummary=" + discountSummary + ", finalAmount=" + finalAmount + "]";
 	}
 
-	static class Builder {
+	public static class Builder {
 
 		private Calendar date;
 		private Customer customer;
