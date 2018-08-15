@@ -2,7 +2,7 @@ package com.store.grocerysystem.domain;
 
 // Keeps any item with its quantity and tracks quantity whenever an item is added or removed.
 
-public class Items implements Comparable<Items>{
+public class Items implements Comparable<Items> {
 
 	private Integer id;
 	private Item item;

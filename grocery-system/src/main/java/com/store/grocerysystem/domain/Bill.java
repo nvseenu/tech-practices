@@ -57,8 +57,8 @@ public class Bill {
 
 	@Override
 	public String toString() {
-		return "Bill:\n"+ dateFormat.format(date.getTime()) + "\n" + customer + "\n"
-				+ itemSummary + "\n" + discountSummary + "\n finalAmount=" + finalAmount + "]";
+		return "Bill:\n" + dateFormat.format(date.getTime()) + "\n" + customer + "\n" + itemSummary + "\n"
+				+ discountSummary + "\n finalAmount=" + finalAmount + "]";
 	}
 
 	public static class Builder {

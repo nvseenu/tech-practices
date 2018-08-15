@@ -34,7 +34,7 @@ public class ItemSummary {
 	@Override
 	public String toString() {
 		List<String> strs = items.stream().map(item -> item.toString()).collect(Collectors.toList());
-		return "ItemSummary:\n" + String.join("\n",strs)+"\nAmount: "+amount;
+		return "ItemSummary:\n" + String.join("\n", strs) + "\nAmount: " + amount;
 	}
 
 }

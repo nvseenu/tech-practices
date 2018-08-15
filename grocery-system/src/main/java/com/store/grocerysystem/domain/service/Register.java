@@ -15,8 +15,8 @@ import com.store.grocerysystem.domain.OrderSummary;
 import com.store.grocerysystem.domain.PaymentType;
 
 /**
- * This class represents a register machine in grocery store domain.
- * It takes care of generating bills, payments and stores orders placed.
+ * This class represents a register machine in grocery store domain. It takes
+ * care of generating bills, payments and stores orders placed.
  * 
  */
 public class Register {
@@ -34,8 +34,9 @@ public class Register {
 	}
 
 	/**
-	 * Generates a bill for given cart for given customer. This process is called as checkout.
-	 * A generated bill will contain items selected, discounts applied and final amount to pay.
+	 * Generates a bill for given cart for given customer. This process is called as
+	 * checkout. A generated bill will contain items selected, discounts applied and
+	 * final amount to pay.
 	 * 
 	 * @param cart
 	 * @param discounts
@@ -56,8 +57,8 @@ public class Register {
 	}
 
 	/**
-	 * Receives payment from the customer for  given bill.
-	 * Generates an order which is equivalent to a printed bill.
+	 * Receives payment from the customer for given bill. Generates an order which
+	 * is equivalent to a printed bill.
 	 * 
 	 * @param bill
 	 * @param paymentType

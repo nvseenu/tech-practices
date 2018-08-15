@@ -5,24 +5,24 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-
 public class Customer {
 
 	private Integer id;
 	private String name;
-	private String dob;	
+	private String dob;
 	private Date dobDate;
-	private PaymentType paymentType;     	
+	private PaymentType paymentType;
+
 	public Customer(Integer id, String name, String dob, PaymentType paymentType) {
 		this.id = id;
 		this.name = name;
 		this.dob = dob;
 		SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
-	    try {
+		try {
 			this.dobDate = parser.parse(dob);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
-		}	    
+		}
 		this.paymentType = paymentType;
 	}
 
@@ -36,16 +36,16 @@ public class Customer {
 
 	public String getDob() {
 		return dob;
-	}	
+	}
 
 	public PaymentType getPaymentType() {
 		return paymentType;
 	}
 
 	public boolean isSeniorCitizen() {
-		Calendar currentDate = Calendar.getInstance();
-		long  diff = currentDate.getTime().getTime() - this.dobDate.getTime();
-		long age = diff / (1000*60*60*24*365);				
+		long timeBetween = Calendar.getInstance().getTimeInMillis() - dobDate.getTime();
+		double yearsBetween = timeBetween / 3.15576e+10;
+		int age = (int) Math.floor(yearsBetween);
 		return (age >= 60);
 	}
 
@@ -57,5 +57,5 @@ public class Customer {
 	@Override
 	public String toString() {
 		return "Customer [id=" + id + ", name=" + name + ", dob=" + dob + ", paymentType=" + paymentType + "]";
-	}		
+	}
 }

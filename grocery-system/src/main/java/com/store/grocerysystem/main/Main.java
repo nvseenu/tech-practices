@@ -11,6 +11,7 @@ import com.store.grocerysystem.domain.DiscountType;
 import com.store.grocerysystem.domain.Item;
 import com.store.grocerysystem.domain.Order;
 import com.store.grocerysystem.domain.PaymentType;
+import com.store.grocerysystem.domain.service.Inventory;
 import com.store.grocerysystem.domain.service.Register;
 import com.store.grocerysystem.domain.service.Store;
 
@@ -22,9 +23,9 @@ import com.store.grocerysystem.domain.service.Store;
 public class Main {
 
 	public static void main(String[] args) {
-
+		Inventory inventory = new Inventory();
 		Register register = new Register("Register002");
-		Store store = new Store(register);
+		Store store = new Store(inventory, register);
 		store.addItems(new Item("Maggi", 25.0, "Noodles"), 5);
 		store.addItems(new Item("TopRamen", 25.0, "Noodles"), 5);
 		store.addItems(new Item("Lays", 15.0, "Chips"), 5);
@@ -37,9 +38,7 @@ public class Main {
 
 		// Find out available items in the store before checkout
 		System.out.println("Store Discounts");
-		for (Discount d : discounts) {
-			System.out.println(d);
-		}
+		discounts.forEach(d -> System.out.println(d));
 
 		// Find out available items in the store before checkout
 		System.out.println("------------------------------------------------");

@@ -27,10 +27,7 @@ public class DiscountSummary {
 
 	@Override
 	public String toString() {
-		return "DiscountSummary [" + getItems() + ", " + getDiscountsApplied()
-				+ ", " + getAmount() + "]";
+		return "DiscountSummary [" + getItems() + ", " + getDiscountsApplied() + ", " + getAmount() + "]";
 	}
-	
-	
 
 }

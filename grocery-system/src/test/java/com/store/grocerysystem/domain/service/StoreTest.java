@@ -25,8 +25,9 @@ public class StoreTest {
 
 	@Before
 	public void setup() {
+		Inventory inventory = new Inventory();
 		Register register = new Register("Register001");
-		store = new Store(register);
+		store = new Store(inventory, register);
 		store.addItems(new Item("Maggi", 25.0, "Noodles"), 5);
 		store.addItems(new Item("TopRamen", 25.0, "Noodles"), 5);
 		store.addItems(new Item("Lays", 15.0, "Chips"), 5);

@@ -11,11 +11,11 @@ public class Cart {
 	private List<Item> items = new ArrayList<>();
 
 	public void addItem(Item item) {
-		if(item == null)
+		if (item == null)
 			throw new IllegalArgumentException("Arg item is null");
 		items.add(item);
 	}
-	
+
 	public void addItems(Collection<Item> items) {
 		this.items.addAll(items);
 	}

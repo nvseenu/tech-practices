@@ -2,9 +2,7 @@ package com.store.grocerysystem.domain.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.store.grocerysystem.domain.Bill;
 import com.store.grocerysystem.domain.Cart;
@@ -18,46 +16,43 @@ import com.store.grocerysystem.domain.PaymentType;
 
 /**
  * 
- * This class represents a Grocery store. It provides features such as "select items", "checkout"
- * and "payment".
+ * This class represents a Grocery store. It provides features such as "select
+ * items", "checkout" and "payment".
  * 
- * It takes care of inventory control like how many items are remaining etc. It keeps each order
- * placed. 
+ * It takes care of inventory control like how many items are remaining etc. It
+ * keeps each order placed.
  *
  */
 public class Store {
 
-	private int itemSequence = 1;
-	private Map<String, Items> itemsMap = new HashMap<>();
+	private Inventory inventory;
 	private Register register;
 	private List<Discount> discounts = new ArrayList<>();
 
-	public Store(Register register) {
+	public Store(Inventory inventory, Register register) {
+		this.inventory = inventory;
 		this.register = register;
 	}
 
-	// Add items to the store. Generally it will be called before store ready for checkout.
+	// Add items to the store. Generally it will be called before store ready for
+	// checkout.
 	public void addItems(Item item, int quantity) {
-		Items items = itemsMap.get(item.getName());
-		if (items == null) {
-			itemsMap.put(item.getName(), new Items(itemSequence++, item, quantity));
-		} else {
-			items.incrementQuantity(quantity);
-		}
+		inventory.addItems(item, quantity);
 	}
-	
-	// Add discounts applicable. Generally it will be called before store ready for checkout.
+
+	// Add discounts applicable. Generally it will be called before store ready for
+	// checkout.
 	public void addDiscounts(Collection<Discount> discounts) {
 		this.discounts.addAll(discounts);
 	}
 
 	// Returns all available items in the store.
 	public Collection<Items> getAllItems() {
-		return itemsMap.values();
+		return inventory.getAllItems();
 	}
 
 	public Items getItems(String itemName) {
-		return itemsMap.get(itemName);
+		return inventory.getItems(itemName);
 	}
 
 	// Returns a new cart to which items can be added.
@@ -65,13 +60,9 @@ public class Store {
 		return new Cart();
 	}
 
-	// Takes an item from a store. 
+	// Takes an item from a store.
 	public Item takeItem(String name) {
-		if (!itemsMap.containsKey(name)) {
-			return null;
-		}
-
-		return itemsMap.get(name).takeItem();
+		return inventory.takeItem(name);
 	}
 
 	// It will checkout given cart for given customer.
@@ -80,10 +71,11 @@ public class Store {
 		return register.checkout(cart, discounts, customer);
 	}
 
-	// Pays given bill and returns an order summary. We can think that order summary is a printed bill.
+	// Pays given bill and returns an order summary. We can think that order summary
+	// is a printed bill.
 	public Order payBill(Bill bill, PaymentType paymentType) {
 		return register.payBill(bill, paymentType);
-	}	
+	}
 
 	public Collection<Discount> getDiscounts() {
 		return discounts;
@@ -92,5 +84,5 @@ public class Store {
 	public OrderSummary getOrderSummary() {
 		return register.getOrderSummary();
 	}
-	
+
 }

@@ -29,35 +29,35 @@ public class DiscountCalc {
 	public DiscountSummary apply(Collection<Item> items, Collection<Discount> discounts, Customer customer) {
 		List<Item> discountItems = new ArrayList<>();
 		List<Discount> discountsApplied = new ArrayList<>();
-		for(Discount d : discounts) {			
-			switch(d.getDiscountType()) {
+		for (Discount d : discounts) {
+			switch (d.getDiscountType()) {
 			case PER_ITEM:
 				discountsApplied.add(d);
 				discountItems.addAll(applyItemDiscount(items, d));
 				break;
-			
+
 			case PER_ITEM_CATEGORY:
 				discountsApplied.add(d);
 				discountItems.addAll(applyCategoryDiscount(items, d));
 				break;
-			
+
 			case SENIOR_CITIZEN:
 				discountsApplied.add(d);
 				discountItems.addAll(applySeniorCitizenDiscount(items, d, customer));
-				break;				
-				
+				break;
+
 			case EMPLOYEE:
 				discountsApplied.add(d);
 				discountItems.addAll(applyEmployeeDiscount(items, d, customer));
 				break;
-				
+
 			case FLAT:
 				discountsApplied.add(d);
 				discountItems.addAll(applyFlatDiscount(items, d));
-				break;					
+				break;
 			}
-		}		
-	
+		}
+
 		return new DiscountSummary(new ItemSummary(discountItems), discountsApplied);
 	}
 
@@ -67,35 +67,33 @@ public class DiscountCalc {
 		});
 		return applyDiscount(discountItems, discount.getPercentage());
 	}
-	
-	
+
 	List<Item> applyCategoryDiscount(Collection<Item> items, Discount discount) {
 		Stream<Item> discountItems = items.stream().filter(item -> {
 			return item.getCategory().equals(discount.getName());
 		});
 		return applyDiscount(discountItems, discount.getPercentage());
 	}
-	
+
 	List<Item> applySeniorCitizenDiscount(Collection<Item> items, Discount discount, Customer customer) {
-		if(customer.isSeniorCitizen()) {
+		if (customer.isSeniorCitizen()) {
 			return applyDiscount(items.stream(), discount.getPercentage());
 		} else {
 			return new ArrayList<>();
 		}
-	}
-	
-	List<Item> applyEmployeeDiscount(Collection<Item> items, Discount discount, Customer customer) {
-		if(customer.isEmployee()) {
-			return applyDiscount(items.stream(), discount.getPercentage());
-		} else {
-			return new ArrayList<>();
-		}
-	}
-	
-	List<Item> applyFlatDiscount(Collection<Item> items, Discount discount) {
-		return applyDiscount(items.stream(), discount.getPercentage());		
 	}
 
+	List<Item> applyEmployeeDiscount(Collection<Item> items, Discount discount, Customer customer) {
+		if (customer.isEmployee()) {
+			return applyDiscount(items.stream(), discount.getPercentage());
+		} else {
+			return new ArrayList<>();
+		}
+	}
+
+	List<Item> applyFlatDiscount(Collection<Item> items, Discount discount) {
+		return applyDiscount(items.stream(), discount.getPercentage());
+	}
 
 	List<Item> applyDiscount(Stream<Item> items, double discountPercentage) {
 		return items.map(item -> {

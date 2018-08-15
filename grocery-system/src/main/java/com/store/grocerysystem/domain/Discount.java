@@ -33,6 +33,5 @@ public class Discount {
 	public String toString() {
 		return "Discount [name=" + name + ", percentage=" + percentage + ", discountType=" + discountType + "]";
 	}
-	
 
 }
