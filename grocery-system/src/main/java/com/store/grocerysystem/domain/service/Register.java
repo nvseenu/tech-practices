@@ -64,7 +64,7 @@ public class Register {
 	 * @param paymentType
 	 * @return An order summary
 	 */
-	public Order payBill(Bill bill, PaymentType paymentType) {
+	public Order receivePayment(Bill bill, PaymentType paymentType) {
 		Order order = new Order(bill, paymentType);
 		orders.add(order);
 		return order;

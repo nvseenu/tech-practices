@@ -1,6 +1,7 @@
 package com.store.grocerysystem.domain;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class DiscountSummary {
@@ -18,7 +19,7 @@ public class DiscountSummary {
 	}
 
 	public Collection<Discount> getDiscountsApplied() {
-		return discountsApplied;
+		return Collections.unmodifiableCollection(discountsApplied);
 	}
 
 	public double getAmount() {

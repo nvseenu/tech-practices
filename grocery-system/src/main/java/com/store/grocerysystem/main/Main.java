@@ -59,17 +59,10 @@ public class Main {
 		Customer customer = new Customer(1, "Srinivasan", "10/01/1950", PaymentType.CASH);
 		Bill bill = store.checkout(cart, customer);
 		System.out.println("------------------------------------------------");
-		System.out.println("Bill:");
-		System.out.println(bill.getItemSummary());
-		System.out.println("Discounts Applied:");
-		System.out.println(bill.getDiscountSummary().getDiscountsApplied());
-		System.out.println("Discounted Items:" + bill.getDiscountSummary().getItems());
-		System.out.println("Items Amount:" + bill.getItemSummary().getAmount());
-		System.out.println("Discount Amount:" + bill.getDiscountSummary().getAmount());
-		System.out.println("Final Amount:" + bill.getFinalAmount());
+		printBill(bill);
 
 		// Pay the bill
-		Order order = store.payBill(bill, PaymentType.CASH);
+		Order order = store.receivePayment(bill, PaymentType.CASH);
 		System.out.println("------------------------------------------------");
 		System.out.println(order);
 
@@ -83,5 +76,16 @@ public class Main {
 		System.out.println("Total orders placed:");
 		System.out.println(store.getOrderSummary());
 
+	}
+
+	private static void printBill(Bill bill) {
+		System.out.println("Bill:");
+		System.out.println(bill.getItemSummary());
+		System.out.println("Discounts Applied:");
+		System.out.println(bill.getDiscountSummary().getDiscountsApplied());
+		System.out.println("Discounted Items:" + bill.getDiscountSummary().getItems());
+		System.out.println("Items Amount:" + bill.getItemSummary().getAmount());
+		System.out.println("Discount Amount:" + bill.getDiscountSummary().getAmount());
+		System.out.println("Final Amount:" + bill.getFinalAmount());
 	}
 }

@@ -1,6 +1,7 @@
 package com.store.grocerysystem.domain.service;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class Inventory {
 
 	// Returns all available items in the store.
 	public Collection<Items> getAllItems() {
-		return itemsMap.values();
+		return Collections.unmodifiableCollection(itemsMap.values());
 	}
 
 	public Items getItems(String itemName) {

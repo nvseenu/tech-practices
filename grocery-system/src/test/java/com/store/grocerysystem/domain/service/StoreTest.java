@@ -100,7 +100,7 @@ public class StoreTest {
 
 		Customer customer = new Customer(1, "Srinivasan", "10/01/1950", PaymentType.CASH);
 		Bill bill = store.checkout(cart, customer);
-		Order order = store.payBill(bill, customer.getPaymentType());
+		Order order = store.receivePayment(bill, customer.getPaymentType());
 		assertEquals("Order does not contain a bill generated", bill, order.getBill());
 		assertEquals("Order does not contain the payment type used", customer.getPaymentType(), order.getPaymentType());
 	}
@@ -134,12 +134,12 @@ public class StoreTest {
 		Cart cart = store.newCart();
 		cart.addItem(store.takeItem("Lays"));
 		Bill bill = store.checkout(cart, customer);
-		Order order1 = store.payBill(bill, PaymentType.CASH);
+		Order order1 = store.receivePayment(bill, PaymentType.CASH);
 		
 		cart = store.newCart();
 		cart.addItem(store.takeItem("Lays"));
 		bill = store.checkout(cart, customer);
-		Order order2 = store.payBill(bill, PaymentType.CASH);
+		Order order2 = store.receivePayment(bill, PaymentType.CASH);
 		
 		OrderSummary orderSummary = store.getOrderSummary();
 		assertEquals("Total orders placed are wrong", 2, orderSummary.getTotalOrders());

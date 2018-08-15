@@ -73,8 +73,8 @@ public class Store {
 
 	// Pays given bill and returns an order summary. We can think that order summary
 	// is a printed bill.
-	public Order payBill(Bill bill, PaymentType paymentType) {
-		return register.payBill(bill, paymentType);
+	public Order receivePayment(Bill bill, PaymentType paymentType) {
+		return register.receivePayment(bill, paymentType);
 	}
 
 	public Collection<Discount> getDiscounts() {

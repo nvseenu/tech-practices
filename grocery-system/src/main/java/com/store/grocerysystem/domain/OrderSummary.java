@@ -2,6 +2,7 @@ package com.store.grocerysystem.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class OrderSummary {
 	}
 
 	public Collection<Order> getOrders() {
-		return orders;
+		return Collections.unmodifiableCollection(orders);
 	}
 
 	public int getTotalOrders() {
