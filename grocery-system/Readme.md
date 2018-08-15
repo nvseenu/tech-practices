@@ -14,9 +14,16 @@
  As a store owner, i would like to give some 'x' discount to my employees on order to motivate them to continue working 
  with the store.  => Done
   
- As a store owner , i would like to see how many items are available so that i can procure accordingly. 
- As a store owner, i would like to see how many orders have been placed so that i can know about profit and loss of my store.
-  
+ As a store owner , i would like to see how many items are available so that i can procure accordingly.  => Done
+ As a store owner, i would like to see how many orders have been placed so that i can know about profit and loss of my store. => Done
+
+Tasks
+------
+- Write main class
+- add comments
+- Refactor code
+- write unit tests
+
  
  Actors:
  -------

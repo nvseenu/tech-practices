@@ -3,6 +3,7 @@ package com.store.grocerysystem.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ItemSummary {
 
@@ -32,7 +33,8 @@ public class ItemSummary {
 
 	@Override
 	public String toString() {
-		return "ItemSummary [items=" + items + ", amount=" + amount + "]";
+		List<String> strs = items.stream().map(item -> item.toString()).collect(Collectors.toList());
+		return "ItemSummary:\n" + String.join("\n",strs)+"\nAmount: "+amount;
 	}
 
 }

@@ -11,72 +11,86 @@ import com.store.grocerysystem.domain.Cart;
 import com.store.grocerysystem.domain.Customer;
 import com.store.grocerysystem.domain.Discount;
 import com.store.grocerysystem.domain.Item;
-import com.store.grocerysystem.domain.ItemEntries;
-import com.store.grocerysystem.domain.ItemEntry;
+import com.store.grocerysystem.domain.Items;
+import com.store.grocerysystem.domain.Order;
 import com.store.grocerysystem.domain.OrderSummary;
 import com.store.grocerysystem.domain.PaymentType;
 
+/**
+ * 
+ * This class represents a Grocery store. It provides features such as "select items", "checkout"
+ * and "payment".
+ * 
+ * It takes care of inventory control like how many items are remaining etc. It keeps each order
+ * placed. 
+ *
+ */
 public class Store {
 
 	private int itemSequence = 1;
-	private Map<String, ItemEntries> itemsEntries = new HashMap<>();
+	private Map<String, Items> itemsMap = new HashMap<>();
 	private Register register;
 	private List<Discount> discounts = new ArrayList<>();
-	
+
 	public Store(Register register) {
 		this.register = register;
 	}
 
-	public void addItems(Collection<Item> items) {
-		items.forEach(item -> {
-			addItem(item);
-		});
-	}
-
-	public void addItem(Item item) {
-		ItemEntry ie = new ItemEntry(itemSequence, item);
-		ItemEntries entries = itemsEntries.get(ie.getItem().getName());
-		if (entries == null) {
-			entries = new ItemEntries();
-			itemsEntries.put(ie.getItem().getName(), entries);
+	// Add items to the store. Generally it will be called before store ready for checkout.
+	public void addItems(Item item, int quantity) {
+		Items items = itemsMap.get(item.getName());
+		if (items == null) {
+			itemsMap.put(item.getName(), new Items(itemSequence++, item, quantity));
+		} else {
+			items.incrementQuantity(quantity);
 		}
-		entries.add(ie);
-
 	}
-
-	public Collection<String> getAllItemNames() {
-		return itemsEntries.keySet();
-	}
-
-	public Collection<Item> getItems(String itemName) {
-		ItemEntries entries = itemsEntries.get(itemName);
-		return entries.getItems();
-	}
-
-	public Cart newCart() {
-		return new Cart();
-	}
-
-	public Item takeItem(String name) {
-		ItemEntries entries = itemsEntries.get(name);
-		return entries.removeOne().getItem();
-	}
-
-	public Bill checkout(Cart cart, Customer customer) {
-		return register.checkout(cart, discounts, customer);
-	}
-
-	public OrderSummary payBill(Bill bill, PaymentType paymentType) {
-		// Charge payment from given payment type
-		OrderSummary summary = new OrderSummary(bill, paymentType);
-		return summary;
-	}
-
+	
+	// Add discounts applicable. Generally it will be called before store ready for checkout.
 	public void addDiscounts(Collection<Discount> discounts) {
 		this.discounts.addAll(discounts);
 	}
 
+	// Returns all available items in the store.
+	public Collection<Items> getAllItems() {
+		return itemsMap.values();
+	}
+
+	public Items getItems(String itemName) {
+		return itemsMap.get(itemName);
+	}
+
+	// Returns a new cart to which items can be added.
+	public Cart newCart() {
+		return new Cart();
+	}
+
+	// Takes an item from a store. 
+	public Item takeItem(String name) {
+		if (!itemsMap.containsKey(name)) {
+			return null;
+		}
+
+		return itemsMap.get(name).takeItem();
+	}
+
+	// It will checkout given cart for given customer.
+	// It will generate and return a bill after applying applicable discounts.
+	public Bill checkout(Cart cart, Customer customer) {
+		return register.checkout(cart, discounts, customer);
+	}
+
+	// Pays given bill and returns an order summary. We can think that order summary is a printed bill.
+	public Order payBill(Bill bill, PaymentType paymentType) {
+		return register.payBill(bill, paymentType);
+	}	
+
 	public Collection<Discount> getDiscounts() {
 		return discounts;
 	}
+
+	public OrderSummary getOrderSummary() {
+		return register.getOrderSummary();
+	}
+	
 }

@@ -13,12 +13,16 @@ public class Customer {
 	private String dob;	
 	private Date dobDate;
 	private PaymentType paymentType;     	
-	public Customer(Integer id, String name, String dob, PaymentType paymentType) throws ParseException {
+	public Customer(Integer id, String name, String dob, PaymentType paymentType) {
 		this.id = id;
 		this.name = name;
 		this.dob = dob;
 		SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
-	    this.dobDate = parser.parse(dob);	    
+	    try {
+			this.dobDate = parser.parse(dob);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}	    
 		this.paymentType = paymentType;
 	}
 

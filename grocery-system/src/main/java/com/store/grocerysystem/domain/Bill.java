@@ -8,7 +8,7 @@ public class Bill {
 	private Calendar date;
 	private Customer customer;
 	private ItemSummary itemSummary;
-	private ItemSummary discountSummary;
+	private DiscountSummary discountSummary;
 	private double finalAmount;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -27,7 +27,7 @@ public class Bill {
 		this.itemSummary = itemSummary;
 	}
 
-	private void setDiscountSummary(ItemSummary discountSummary) {
+	private void setDiscountSummary(DiscountSummary discountSummary) {
 		this.discountSummary = discountSummary;
 	}
 
@@ -47,7 +47,7 @@ public class Bill {
 		return itemSummary;
 	}
 
-	public ItemSummary getDiscountSummary() {
+	public DiscountSummary getDiscountSummary() {
 		return discountSummary;
 	}
 
@@ -57,8 +57,8 @@ public class Bill {
 
 	@Override
 	public String toString() {
-		return "Bill [date=" + dateFormat.format(date.getTime()) + ", customer=" + customer + ", itemSummary="
-				+ itemSummary + ", discountSummary=" + discountSummary + ", finalAmount=" + finalAmount + "]";
+		return "Bill:\n"+ dateFormat.format(date.getTime()) + "\n" + customer + "\n"
+				+ itemSummary + "\n" + discountSummary + "\n finalAmount=" + finalAmount + "]";
 	}
 
 	public static class Builder {
@@ -66,7 +66,7 @@ public class Bill {
 		private Calendar date;
 		private Customer customer;
 		private double finalAmount;
-		private ItemSummary discountSummary;
+		private DiscountSummary discountSummary;
 		private ItemSummary itemSummary;
 
 		public Builder() {
@@ -88,7 +88,7 @@ public class Bill {
 			return this;
 		}
 
-		public Builder addDiscountSummary(ItemSummary discountSummary) {
+		public Builder addDiscountSummary(DiscountSummary discountSummary) {
 			this.discountSummary = discountSummary;
 			return this;
 		}

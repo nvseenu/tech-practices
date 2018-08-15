@@ -1,20 +1,41 @@
 package com.store.grocerysystem.domain;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+/**
+ * It keeps all orders placed.
+ *
+ */
 public class OrderSummary {
-	
-	private Bill bill;
-	private PaymentType paymentType;
-	
-	public OrderSummary(Bill bill, PaymentType paymentType) {
-		this.bill = bill;
-		this.paymentType = paymentType;
+
+	private List<Order> orders = new ArrayList<>();
+	private int totalOrders;
+	private double totalAmount;
+
+	public OrderSummary(Collection<Order> orders) {
+		this.orders.addAll(orders);
+		totalOrders = orders.size();
+		for (Order o : orders) {
+			totalAmount += o.getBill().getFinalAmount();
+		}
 	}
 
-	public Bill getBill() {
-		return bill;
+	public Collection<Order> getOrders() {
+		return orders;
 	}
 
-	public PaymentType getPaymentType() {
-		return paymentType;
-	}	
+	public int getTotalOrders() {
+		return totalOrders;
+	}
+
+	public double getTotalAmount() {
+		return totalAmount;
+	}
+
+	@Override
+	public String toString() {
+		return "OrderSummary [orders=" + orders + ", totalOrders=" + totalOrders + ", totalAmount=" + totalAmount + "]";
+	}
 }

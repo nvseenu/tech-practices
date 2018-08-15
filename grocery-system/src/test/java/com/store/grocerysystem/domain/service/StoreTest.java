@@ -1,11 +1,12 @@
 package com.store.grocerysystem.domain.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.store.grocerysystem.domain.Bill;
@@ -14,19 +15,40 @@ import com.store.grocerysystem.domain.Customer;
 import com.store.grocerysystem.domain.Discount;
 import com.store.grocerysystem.domain.DiscountType;
 import com.store.grocerysystem.domain.Item;
+import com.store.grocerysystem.domain.Order;
 import com.store.grocerysystem.domain.OrderSummary;
 import com.store.grocerysystem.domain.PaymentType;
-import com.store.grocerysystem.domain.service.DiscountStrategy;
-import com.store.grocerysystem.domain.service.DiscountStrategyImpl;
-import com.store.grocerysystem.domain.service.Register;
-import com.store.grocerysystem.domain.service.Store;
 
 public class StoreTest {
 
+	private Store store;
+
+	@Before
+	public void setup() {
+		Register register = new Register("Register001");
+		store = new Store(register);
+		store.addItems(new Item("Maggi", 25.0, "Noodles"), 5);
+		store.addItems(new Item("TopRamen", 25.0, "Noodles"), 5);
+		store.addItems(new Item("Lays", 15.0, "Chips"), 5);
+		store.addItems(new Item("Bingo", 15.0, "Chips"), 5);
+	}
+
 	@Test
-	public void testCheckoutWithoutDiscounts() throws ParseException {
-		Store store = createStore();
-		store.addItems(prepareItems());
+	public void testSetup() {
+		List<Discount> discounts = new ArrayList<>();
+		discounts.add(new Discount("Maggi", 5, DiscountType.PER_ITEM));
+		discounts.add(new Discount(10, DiscountType.SENIOR_CITIZEN));
+
+		store.addDiscounts(discounts);
+		assertEquals("Total Lays items is not same as what we set", 5, store.getItems("Lays").getQuantity());
+		assertEquals("Total TopRamen items is not same as what we set", 5, store.getItems("TopRamen").getQuantity());
+		assertEquals("Total Maggi items is not same as what we set", 5, store.getItems("Maggi").getQuantity());
+		assertEquals("Total Bingo items is not same as what we set", 5, store.getItems("Bingo").getQuantity());
+		assertEquals("Discounts are not same as what we set", discounts, store.getDiscounts());
+	}
+
+	@Test
+	public void testCheckoutWithoutDiscounts() {
 
 		Cart cart = store.newCart();
 		List<Item> items = new ArrayList<>();
@@ -41,10 +63,8 @@ public class StoreTest {
 	}
 
 	@Test
-	public void testCheckoutWithItemDiscounts() throws ParseException {
+	public void testCheckoutWithItemDiscounts() {
 
-		Store store = createStore();
-		store.addItems(prepareItems());
 		List<Discount> discounts = new ArrayList<>();
 		discounts.add(new Discount("Maggi", 5, DiscountType.PER_ITEM));
 		discounts.add(new Discount(10, DiscountType.SENIOR_CITIZEN));
@@ -65,16 +85,12 @@ public class StoreTest {
 
 		Customer customer = new Customer(1, "Srinivasan", "10/01/1950", PaymentType.CASH);
 		Bill bill = store.checkout(cart, customer);
-		System.out.println(bill);
 		assertEquals("Expected items are not added in the bill", items, bill.getItemSummary().getItems());
 		assertEquals(finalAmount, bill.getFinalAmount(), 0.0);
 	}
 
 	@Test
-	public void testPayment() throws ParseException {
-		Store store = createStore();
-
-		store.addItems(prepareItems());
+	public void testPayment() {
 		Cart cart = store.newCart();
 		List<Item> items = new ArrayList<>();
 		items.add(store.takeItem("Lays"));
@@ -83,25 +99,52 @@ public class StoreTest {
 
 		Customer customer = new Customer(1, "Srinivasan", "10/01/1950", PaymentType.CASH);
 		Bill bill = store.checkout(cart, customer);
-		OrderSummary order = store.payBill(bill, customer.getPaymentType());
+		Order order = store.payBill(bill, customer.getPaymentType());
 		assertEquals("Order does not contain a bill generated", bill, order.getBill());
 		assertEquals("Order does not contain the payment type used", customer.getPaymentType(), order.getPaymentType());
 	}
 
-	private Store createStore() {
-		DiscountStrategy discountStrategy = new DiscountStrategyImpl();
-		Register register = new Register(1, discountStrategy);
-		return new Store(register);
+	@Test
+	public void testAvaialbleItemsAfterSomeCheckouts() {
+		Cart cart = store.newCart();
+		List<Item> items = new ArrayList<>();
+		items.add(store.takeItem("Lays"));
+		items.add(store.takeItem("Lays"));
+		items.add(store.takeItem("TopRamen"));
+		items.add(store.takeItem("TopRamen"));
+		cart.addItems(items);
+
+		Customer customer = new Customer(1, "Srinivasan", "10/01/1950", PaymentType.CASH);
+		store.checkout(cart, customer);
+
+		assertEquals("Total Lays items is not reduced after checkout", 3, store.getItems("Lays").getQuantity());
+		assertEquals("Total TopRamen items is not reduced after checkout", 3, store.getItems("TopRamen").getQuantity());
+		assertEquals("Total Maggi items does not remain same after checkout, as it has not been selected", 5,
+				store.getItems("Maggi").getQuantity());
+		assertEquals("Total Bingo items does not remain same after checkout, as it has not been selected", 5,
+				store.getItems("Bingo").getQuantity());
+
+	}
+	
+	@Test
+	public void testTotalOrdersPlaced() {
+		Customer customer = new Customer(1, "Srinivasan", "10/01/1950", PaymentType.CASH);
+
+		Cart cart = store.newCart();
+		cart.addItem(store.takeItem("Lays"));
+		Bill bill = store.checkout(cart, customer);
+		Order order1 = store.payBill(bill, PaymentType.CASH);
+		
+		cart = store.newCart();
+		cart.addItem(store.takeItem("Lays"));
+		bill = store.checkout(cart, customer);
+		Order order2 = store.payBill(bill, PaymentType.CASH);
+		
+		OrderSummary orderSummary = store.getOrderSummary();
+		assertEquals("Total orders placed are wrong", 2, orderSummary.getTotalOrders());
+		assertTrue("First order is not found", orderSummary.getOrders().contains(order1));
+		assertTrue("Second order is not found", orderSummary.getOrders().contains(order2));
+		
 	}
 
-	private List<Item> prepareItems() {
-		List<Item> items = new ArrayList<>();
-		for (int i = 0; i < 5; i++) {
-			items.add(new Item("Maggi", 25.0, "Noodles"));
-			items.add(new Item("TopRamen", 25.0, "Noodles"));
-			items.add(new Item("Lays", 15.0, "Chips"));
-			items.add(new Item("Bingo", 15.0, "Chips"));
-		}
-		return items;
-	}
 }
