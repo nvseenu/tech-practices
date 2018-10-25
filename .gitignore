@@ -1,0 +1,3 @@
+# Files to ignore for python projects
+**/.pytest_cache
+**/__pycache__
