@@ -70,19 +70,19 @@ class Entry:
 
 class MaxHeap:
 
-    def __init__(self, priority_callback):        
-        self._entries = []
-        self._priority_callback = priority_callback
+    def __init__(self):        
+        self._entries = []        
 
-    def insert(self, key):        
-        e = Entry(self._priority_callback(key), key)
+    def insert(self, key, priority):        
+        e = Entry(priority, key)
         self._entries.append(e)
         n = (len(self._entries) // 2 ) 
         for i in range(n, -1, -1):
             max_heapify(self._entries, i)
 
-    def increase_key(self, idx,  key):        
-        e = Entry(self._priority_callback(key), key)
+    def increase_key(self, key, priority=None):        
+        idx = self.find_index(key)
+        e = Entry(priority, key)
         self._entries[idx] = e       
         
         for i in range(idx, -1, -1):
@@ -101,8 +101,13 @@ class MaxHeap:
         return m 
 
     def find_index(self, key):
-        e = Entry(self._priority_callback(key), key)
-        return self._entries.index(e)
+        for i,e in enumerate(self._entries):
+            if e._key == key:
+                return i
+
+        return -1        
+        
+
                
 
 

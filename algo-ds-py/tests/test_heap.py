@@ -24,13 +24,11 @@ class TestHeap(unittest.TestCase):
         self.assertEqual(expected_heaps, heaps)
    
     def test_max_heap(self):
-        arr = [1,2,3,4,5,6,7,8,9,10]
-        def priority(x):            
-            return x
+        arr = [1,2,3,4,5,6,7,8,9,10]       
         
-        h = MaxHeap(priority)        
+        h = MaxHeap()        
         for i in arr:
-            h.insert(i)
+            h.insert(i,i)
 
         expected_heaps = [10,9,8,7,6,5,4,3,2,1]
         for i in expected_heaps:  
@@ -39,35 +37,29 @@ class TestHeap(unittest.TestCase):
     def test_increase_key(self):
         arr = [1,2,3,4,5,6,7,8,9,10]
 
-        def priority(x):            
-            return x
-        
-        h = MaxHeap(priority)        
+        h = MaxHeap()        
         for i in arr:
-            h.insert(i)
+            h.insert(i, i)
 
         # Increase key 1 to 20         
-        h.increase_key(h.find_index(1), 20)
+        h.increase_key(1, 20)
 
-        expected_heaps = [20,10, 9,8,7,6,5,4,3,2]
+        expected_heaps = [1,10, 9,8,7,6,5,4,3,2]
         for i in expected_heaps:
             self.assertEqual(i, h.extract_max(), f"Got unexpected maximum value")      
 
 
     def test_max_heap_for_custom_object(self):
 
-        arr = [Job(i, "Job"+str(i)) for i in range(1,11)]
+        jobs = [Job(i, "Job"+str(i)) for i in range(1,11)]
 
-        def priority(job):            
-            return job.priority()
-        
-        h = MaxHeap(priority)        
-        for i in arr:
-            h.insert(i)
+        h = MaxHeap()        
+        for job in jobs:
+            h.insert(job, job._id)
 
-        expected_heaps = [arr[i] for i in range(8, -1, -1)]
-        for i in expected_heaps:  
-            self.assertEqual(i, h.extract_max(), f"For i:{i}, Got unexpected maximum value")              
+        expected_jobs = [jobs[i] for i in range(9, -1, -1)]
+        for job in expected_jobs:  
+            self.assertEqual(job, h.extract_max(), f"Got unexpected maximum value")              
 
        
 
