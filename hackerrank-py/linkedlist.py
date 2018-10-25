@@ -71,7 +71,28 @@ def merge_lists(head1, head2):
         res.insert_node(h2.data)
         h2 = h2.next    
 
-    return res.head    
+    return res.head  
+
+
+
+def has_cycle(head):
+    h1 = head
+    h2 = head
+    if h2.next:
+        h2 = h2.next.next
+
+    while h1 and h2:       
+        if h1 is h2:
+            return True
+        h1 = h1.next 
+        if h2.next:
+            h2 = h2.next.next  
+        else:
+            h2 = h2.next     
+
+    return False
+            
+
 
 def items(head):
     a = []

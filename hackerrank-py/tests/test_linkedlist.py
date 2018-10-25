@@ -32,7 +32,14 @@ class TestLinkedList(unittest.TestCase):
 		h = linkedlist.merge_lists(ll.head, ll1.head)	
 		print("header => " , linkedlist.items(h))
 					
+	def test_has_cycle(self):
+		ll = linkedlist.SinglyLinkedList()
+		for i in range(10):
+			ll.insert_node(i)
 
+		print("ll => " , linkedlist.items(ll.head))	
+		h = linkedlist.has_cycle(ll.head)	
+		print("cycle => " , h)
 
 if __name__ == '__main__':
     unittest.main()
