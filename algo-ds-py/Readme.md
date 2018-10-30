@@ -5,7 +5,10 @@ This porjects contains below data structure and algorithm implmentations
 
 Data Structures:
 ================
-- Heap 
+- Heap ( Mix and Max )
+- Priority Queue
+- LFU Cache
+- LRU Cache
 
 
 Algorithms:
