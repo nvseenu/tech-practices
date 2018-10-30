@@ -102,6 +102,27 @@ def items(head):
 
     return a    
 
+def getNode(head, positionFromTail):
+    # Find size of the list
+    n = head
+    size = 0
+    while n:
+        size += 1
+        n = n.next   
+
+    # Find nodes to iterate from tail position
+    i = (size - 1) - positionFromTail     
+    n = head
+
+    while i > 0:
+        n = n.next
+        i -= 1
+
+    return n.data    
+
+
+
+
 
 
 

@@ -42,7 +42,7 @@ def height(root):
 
     return  1 + max(height(root.left), height(root.right))   
 
-    
+
 """
 Node is defined as
 self.left (the left child of the node)
@@ -50,7 +50,25 @@ self.right (the right child of the node)
 self.info (the value of the node)
 """
 def topView(root):
-    #Write your code here
-    return []
+    res = _topview(root)
+    s = [str(r) for r in res]
+    return " ".join(s)
 
+def _topview(root):
+    if not root:
+        return []
+    return _leftview(root.left) + [root.info] + _rightview(root.right)
+
+def _leftview(node):
+    if not node:
+        return []
+
+    return _leftview(node.left) + [node.info]    
+
+
+def _rightview(node):
+    if not node:
+        return []
+
+    return  [node.info] + _rightview(node.right)  
 

@@ -21,25 +21,37 @@ class TestLinkedList(unittest.TestCase):
 		for i in range(10):
 			ll.insert_node(i)
 
-		print("ll => " , linkedlist.items(ll.head))	
 
 		ll1 = linkedlist.SinglyLinkedList()
 		for i in range(10):
 			ll1.insert_node(i)
 
-		print("ll1 => " , linkedlist.items(ll1.head))		
-
 		h = linkedlist.merge_lists(ll.head, ll1.head)	
-		print("header => " , linkedlist.items(h))
 					
 	def test_has_cycle(self):
 		ll = linkedlist.SinglyLinkedList()
-		for i in range(10):
-			ll.insert_node(i)
+		ll.insert_node(1)
+		self.assertFalse(linkedlist.has_cycle(ll.head))			
 
-		print("ll => " , linkedlist.items(ll.head))	
-		h = linkedlist.has_cycle(ll.head)	
-		print("cycle => " , h)
+	
+	def test_get_node_from_tail(self):
+		ll = linkedlist.SinglyLinkedList()
+		ll.insert_node(3)
+		ll.insert_node(2)
+		ll.insert_node(1)
 
-if __name__ == '__main__':
-    unittest.main()
+		self.assertEqual(3, linkedlist.getNode(ll.head, 2))
+
+		ll = linkedlist.SinglyLinkedList()
+		ll.insert_node(1)
+		self.assertEqual(1, linkedlist.getNode(ll.head, 0))
+
+		ll = linkedlist.SinglyLinkedList()
+		ll.insert_node(4)
+		ll.insert_node(3)
+		ll.insert_node(2)
+		ll.insert_node(1)
+		self.assertEqual(3, linkedlist.getNode(ll.head, 2))
+
+
+
