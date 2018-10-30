@@ -1,6 +1,6 @@
 import unittest
 import heap
-from heap import MaxHeap
+from heap import MaxHeap,MinHeap
 
 class TestHeap(unittest.TestCase):
 
@@ -61,7 +61,67 @@ class TestHeap(unittest.TestCase):
         for job in expected_jobs:  
             self.assertEqual(job, h.extract_max(), f"Got unexpected maximum value")              
 
-       
+     
+    def test_min_heap(self):
+        arr = [10,9,8,7,6,5,4,3,2,1]       
+        
+        h = MinHeap()        
+        for i in arr:
+            h.insert(i,i)
+
+        expected_heaps = [1,2,3,4,5,6,7,8,9,10]
+        for i in expected_heaps:  
+            self.assertEqual(i, h.extract_min(), f"For i:{i}, Got unexpected minimum value") 
+
+    def test_get_for_min_heap(self):
+        arr = [10,9,8,7,6,5,4,3,2,1]       
+        
+        h = MinHeap()  
+        for i in arr:
+            h.insert(i,i)      
+        
+        self.assertEqual(10, h.get(10), "Got an unexpected value")
+        self.assertEqual(5, h.get(5), "Got an unexpected value") 
+
+    def test_increase_key_with_min_heap(self):
+        arr = [10,9,8,7,6,5,4,3,2,1]    
+
+        h = MinHeap()        
+        for i in arr:
+            h.insert(i, i)
+
+        # Increase key 1 to 20m now top item will be 2, as 1 has been moved
+        # to last position      
+        h.increase_key(1, 20)
+
+        expected_heaps = [2,3,4,5,6,7,8,9,10,1]
+        for i in expected_heaps:
+            self.assertEqual(i, h.extract_min(), f"Got unexpected minimum value") 
+
+
+    def test_min_heap_for_custom_object(self):
+
+        jobs = [
+            Job(4, "Job4"),
+            Job(3, "Job3"),
+            Job(2, "Job2"),
+            Job(1, "Job1") 
+            ]
+
+
+        h = MinHeap()        
+        for job in jobs:
+            h.insert(job, job._id)
+
+        expected_jobs = [
+            Job(1, "Job1"),
+            Job(2, "Job2"),
+            Job(3, "Job3"),
+            Job(4, "Job4")           
+        ]
+
+        for job in expected_jobs:  
+            self.assertEqual(job, h.extract_min(), f"Got unexpected minimum value")        
 
 class Job:
     def __init__(self, id, name):
@@ -71,6 +131,9 @@ class Job:
     
     def priority(self):
         return self._id    
+
+    def __eq__(self, other):
+        return (self._id, self._name) == (other._id, other._name)      
 
     def __str__(self):
         return f"Job[id={self._id}, name={self._name}"    
