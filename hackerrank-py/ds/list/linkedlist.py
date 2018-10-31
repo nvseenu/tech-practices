@@ -80,6 +80,8 @@ def has_cycle(head):
     h2 = head
     if h2.next:
         h2 = h2.next.next
+    else:
+        return False     
 
     while h1 and h2:       
         if h1 is h2:
