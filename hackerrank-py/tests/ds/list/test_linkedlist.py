@@ -65,4 +65,33 @@ class TestLinkedList(unittest.TestCase):
         self.assertEqual(3, linkedlist.getNode(ll.head, 2))
 
 
+    def test_find_merge_node(self):
+        ll = linkedlist.SinglyLinkedList()
+        ll.insert_node(3)
+        ll.insert_node(2)
+        ll.insert_node(1)
+
+    
+    def test_remove_duplicates(self):
+        ll = linkedlist.SinglyLinkedList()
+        ll.insert_node(1)
+        ll.insert_node(2)
+        ll.insert_node(2)        
+        ll.insert_node(3)       
+        ll.insert_node(4)    
+        new_head = linkedlist.removeDuplicates(ll.head)        
+        self.assertEqual([1,2,3,4], linkedlist.items(new_head))    
+
+
+        ll = linkedlist.SinglyLinkedList()
+        ll.insert_node(3)
+        ll.insert_node(3)
+        ll.insert_node(3)        
+        ll.insert_node(4)       
+        ll.insert_node(5)    
+        ll.insert_node(5)
+        new_head = linkedlist.removeDuplicates(ll.head)        
+        self.assertEqual([3, 4, 5], linkedlist.items(new_head))    
+
+
 

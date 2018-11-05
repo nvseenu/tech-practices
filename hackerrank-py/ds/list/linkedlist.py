@@ -123,6 +123,36 @@ def getNode(head, positionFromTail):
     return n.data    
 
 
+def findMergeNode(head1, head2):
+    visited_items = {}
+    h1 = head1
+    while h1:
+        visited_items[h1] = 1
+        h1 = h1.next
+
+    h2 = head2
+    while h2:
+        if visited_items[h2]:
+            return h2.data
+        
+        h2 = h2.next                            
+
+    return None   
+
+
+def removeDuplicates(head):
+    n = head     
+    while n and n.next:        
+        if n.data == n.next.data:
+            n.next = n.next.next
+        else:    
+            n = n.next
+
+    return head   
+
+
+
+
 
 
 
