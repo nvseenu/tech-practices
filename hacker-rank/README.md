@@ -1,1 +1,0 @@
-This project contains slutions to the problems given in HackerRank website
