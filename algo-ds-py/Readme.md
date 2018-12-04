@@ -13,3 +13,4 @@ Data Structures:
 
 Algorithms:
 ==========
+- Insertion Sort
