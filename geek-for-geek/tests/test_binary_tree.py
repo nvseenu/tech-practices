@@ -15,7 +15,7 @@ class TestBinaryTree(unittest.TestCase):
 		t = self.binary_tree()		
 		self.assertEqual([1,2,4,5,3], t.preorder())
 
-	
+		
 	def test_inorder(self):	
 		t = self.binary_tree()
 		self.assertEqual([4,2, 5, 1, 3], t.inorder())
@@ -25,6 +25,18 @@ class TestBinaryTree(unittest.TestCase):
 		t = self.binary_tree()
 		self.assertEqual([4,5,2,3,1], t.postorder())		
 
+	def test_preorder_nonrecursive(self):	
+		t = self.binary_tree()		
+		self.assertEqual([1,2,4,5,3], t.preorder_nonrecursive())		
+
+	
+	def test_inorder_nonrecursive(self):	
+		t = self.binary_tree()		
+		self.assertEqual([4,2, 5, 1, 3], t.inorder_nonrecursive())
+
+	def test_postorder_nonrecursive(self):	
+		t = self.binary_tree()
+		self.assertEqual([4,5,2,3,1], t.postorder_nonrecursive())				
 
 	def binary_tree(self):
 		"""

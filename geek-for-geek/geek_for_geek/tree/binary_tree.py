@@ -67,3 +67,73 @@ class BinaryTree:
 		self._postorder(node.right, path)	
 		path.append(node.key)
 
+	def preorder_nonrecursive(self):		
+		return self._preorder_nonrecursive(self._root)		
+
+
+	def _preorder_nonrecursive(self, node):
+		stack = []	
+		current = node
+		path = []
+		while True:
+
+			while current:
+				path.append(current.key)
+				stack.append(current)
+				current = current.left
+
+			if stack:
+				current = stack.pop()
+				current = current.right
+			else:
+				break	
+			
+		return path
+
+
+	def inorder_nonrecursive(self):		
+		return self._inorder_nonrecursive(self._root)
+		
+
+	
+	def _inorder_nonrecursive(self, node):
+		stack = []		
+		current = node
+		path = []
+		while True:			
+			while current:									
+				stack.append(current)
+				current = current.left			
+
+			if stack:
+				current = stack.pop()				
+				path.append(current.key)
+				current = current.right
+			else:
+				break	
+
+		return path	
+
+
+	def postorder_nonrecursive(self):		
+		return self._postorder_nonrecursive(self._root)
+		
+
+	def _postorder_nonrecursive(self, node):
+		stack = []		
+		path = []
+		stack.append(node)
+
+		while stack:	
+
+			current = stack.pop()
+			path.append(current.key)
+
+			if current.left:
+				stack.append(current.left)
+
+			if current.right:									
+				stack.append(current.right)
+
+		path.reverse()
+		return path	
