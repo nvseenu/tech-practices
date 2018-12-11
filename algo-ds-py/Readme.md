@@ -1,8 +1,6 @@
 This porjects contains below data structure and algorithm implmentations
 
 
-
-
 Data Structures:
 ================
 - Heap ( Mix and Max )
@@ -14,3 +12,4 @@ Data Structures:
 Algorithms:
 ==========
 - Insertion Sort
+- Merge Sort
