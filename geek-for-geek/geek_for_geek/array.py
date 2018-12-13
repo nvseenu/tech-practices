@@ -70,6 +70,68 @@ def left_rotate1(arr, d):
 
 
 
+def merge(arr1, arr2):
+    """
+    Merge an array of size n into another array of size m+n
+
+    """
+
+    # Move elements to end of the array arr1
+    index1 = len(arr1)-1
+    index2 = index1
+
+    for i in range(index1, -1, -1):
+        
+        if arr1[i]:            
+            arr1[index2] = arr1[i]
+
+            # Check if both indexes are not same. otherwise
+            # we will be overwriting an element with None
+            if index2 != i:
+                arr1[i] = None
+
+            index2 -= 1
+       
+            
+    i = 0
+    index1 = index2+1
+    index2 = 0
+    
+    while index1 < len(arr1) and index2 < len(arr2):       
+
+        if arr1[index1] < arr2[index2]:
+            arr1[i] = arr1[index1]            
+            index1 += 1
+        else:
+            arr1[i] = arr2[index2]
+            index2 += 1               
+            
+        i += 1    
+
+    
+    # Copy remaining elements of arr1 if any
+    while index1 < len(arr1):
+        arr1[i] = arr1[index1]
+        index1 += 1
+        i += 1
+
+
+    # Copy remaining elements of arr2 if any
+    while index2 < len(arr2):
+        arr1[i] = arr2[index2]
+        index2 += 1
+        i += 1    
+
+
+
+    
+
+
+
+
+
+
+
 
     
         

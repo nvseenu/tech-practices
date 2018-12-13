@@ -5,7 +5,7 @@ class TestArray(unittest.TestCase):
 
     def setUp(self):
         pass
-        
+
 
     def tearDown(self):
         pass
@@ -47,6 +47,20 @@ class TestArray(unittest.TestCase):
         arr = input[:]
         array.left_rotate1(arr, 3)
         self.assertEqual(expected, arr)    
+
+
+    def test_merge(self):
+        input1 = [2,None,None,7,None,None,10]
+        input2 = [5,8,12,14]
+        expected = [2,5,7,8,10,12,14]
+
+        # Since the merge is a mutable operation,
+        # We need to take a copy before sending it.
+        arr = input1[:]
+        array.merge(arr, input2)        
+        self.assertEqual(expected, arr, "Merge of m+n and n arrray is not working")    
+
+
 
 
 
