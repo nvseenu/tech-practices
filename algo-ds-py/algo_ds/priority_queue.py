@@ -1,4 +1,4 @@
-from heap import MinHeap
+from .heap import MinHeap
 
 class PriorityQueue:
 

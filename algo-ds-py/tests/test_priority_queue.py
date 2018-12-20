@@ -1,6 +1,6 @@
 import unittest
 
-from priority_queue import PriorityQueue
+from algo_ds import PriorityQueue
 
 class TestPriorityQueue(unittest.TestCase):
 

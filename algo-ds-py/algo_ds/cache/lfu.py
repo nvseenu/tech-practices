@@ -1,5 +1,5 @@
-from priority_queue import PriorityQueue
-from heap import Entry
+from algo_ds import PriorityQueue
+from algo_ds.heap import Entry
 
 class LFU:
     """

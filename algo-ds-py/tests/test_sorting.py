@@ -1,5 +1,5 @@
 import unittest
-import sorting
+from algo_ds import sorting 
 
 class TestSort(unittest.TestCase):
 

@@ -1,6 +1,6 @@
 import unittest
-import heap
-from heap import MaxHeap,MinHeap
+import algo_ds.heap as heap
+from algo_ds.heap import MaxHeap,MinHeap
 
 class TestHeap(unittest.TestCase):
 

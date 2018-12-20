@@ -1,4 +1,4 @@
-from cache.lfu import LFU
+from algo_ds.cache.lfu import LFU
 import unittest
 
 
