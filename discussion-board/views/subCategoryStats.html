@@ -1,0 +1,44 @@
+<!-- main forum layout -->
+<div class="discussionboard-layout">
+    <div class="container">
+        <!-- the actual content block -->
+        <div class="index-view">
+            <div class="panel category-panel">
+                <div class="panel-body category-body">
+                    <div class="category-meta">
+                        <div class="col-md-6 forum-name">Sub Category</div>
+                        <div class="col-md-2 forum-stats">Questions</div>
+                        <div class="col-md-2 forum-stats">Answers</div>
+                    </div>
+                    {{#SubCategoryStats}}
+                    <div class="row category-row hover">
+                        <div class="col-md-6 forum-info">
+                            <div class="row">
+                                <div class="col-md-1 col-sm-2 col-xs-2 forum-status">
+                                    <span class="fa fa-comments-o fa-fw forum-read"></span>
+                                </div>
+                                <div class="col-md-11 col-sm-10 col-xs-10">
+                                    <div class="forum-name">
+                                        <a href="/discussion-board/categories/{{Category}}/subcategories/{{Name}}/topics">{{Name}}</a>
+                                    </div>
+                                    <div class="forum-description">
+                                        <p>{{Description}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 forum-topics">
+                            {{TotalQuestions}}
+                        </div>
+                        <div class="col-md-2 forum-posts">
+                            {{TotalAnswers}}
+                        </div>
+                    </div>
+                    {{/SubCategoryStats}}
+                    <!-- end category-content -->
+                </div>
+            </div>
+        </div>
+        <!-- end discussionboard-layout -->
+    </div>
+</div>

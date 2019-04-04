@@ -1,0 +1,8 @@
+
+Hello User,
+
+     Your token is {{Token}}. Please enter the token into the Discussion Board login page.
+  Please note, This token will only be available for 24 Hours from the time of generation.
+
+Thanks,
+Discussion Board Team.

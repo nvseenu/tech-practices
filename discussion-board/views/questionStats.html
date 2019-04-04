@@ -1,0 +1,54 @@
+<!-- main forum layout -->
+<div class="discussionboard-layout">
+    <div class="container">
+        <!-- the actual content block -->
+        <div class="index-view">
+            <div class="panel forum-panel">
+                <div class="panel-body forum-body">
+                    <div class="forum-meta">
+                        <div class="col-md-6 topic-name">Question</div>
+                        <div class="col-md-2 topic-stats">Answers</div>
+                        <div class="col-md-2 topic-last-post">Last Answer</div>
+                    </div>
+                    {{#QuestionStats}}
+                    <div class="row forum-row hover">
+                        <div class="col-md-6 topic-info">
+                            <div class="row">
+                                <div class="col-md-1 col-sm-2 col-xs-2 topic-status">
+                                    <span class="fa fa-comments-o fa-fw topic-read"></span>
+                                </div>
+                                <div class="col-md-11 col-sm-10 col-xs-10">
+                                    <div class="topic-name">
+                                        <a href="/discussion-board/categories/{{Category}}/subcategories/{{SubCategory}}/questions/{{Id}}">{{Title}}</a>
+                                    </div>
+                                    <div class="topic-author">
+                                        by {{CreatedBy.Name}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 topic-stats">
+                            {{TotalAnswers}}
+                        </div>
+
+                        <div class="col-md-2 topic-last-post">
+                            <a href="/post/1430">{{RecentAnswer.CreatedAt}}</a><br>
+
+                            <div class="topic-author">
+                                by
+
+                                <a href="/user/demo">{{RecentAnswer.CreatedBy.Name}}</a>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    {{/QuestionStats}}
+                    <!-- end category-content -->
+
+                </div>
+            </div>
+        </div>
+        <!-- end discussionboard-layout -->
+    </div>
+</div>

@@ -1,0 +1,29 @@
+<!-- main forum layout -->
+<div class="discussionboard-layout">
+    <div class="container">
+        <div id="flashed-messages" class="{{^ErrorMessage}}hidden{{/ErrorMessage}}">
+            <div class="alert alert-danger">
+                <i class="fa fa-warning"></i> &nbsp;
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <span>{{ErrorMessage}}</span>
+            </div>
+        </div>
+
+        <div class="panel page-panel">
+            <div class="panel-heading page-head">
+                Logout
+            </div>
+            <div class="panel-body">
+
+
+                    <div class="form-group row">
+                        <label class="col-sm-7 control-label" for="username">You have successfully logged out.
+                        Please click <a href="/discussion-board/login"> here </a> to login again.
+                        </label>
+
+                        <!-- end div_class -->
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>

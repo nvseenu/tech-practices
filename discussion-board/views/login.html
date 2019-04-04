@@ -1,0 +1,200 @@
+<!-- main forum layout -->
+<div class="discussionboard-layout">
+    <div class="container">
+        <div id="flashed-messages" class="{{^ErrorMessage}}hidden{{/ErrorMessage}}">
+            <div class="alert alert-danger">
+                <i class="fa fa-warning"></i> &nbsp;
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <span>{{ErrorMessage}}</span>
+            </div>
+        </div>
+
+        <div id="infoDiv" class="hidden">
+            <div class="alert alert-info">
+                <i class="fa fa-info"></i> &nbsp;
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <span> </span>
+            </div>
+        </div>
+        <div class="panel page-panel">
+            <div class="panel-heading page-head">
+                Login
+            </div>
+            <div class="panel-body">
+
+                <form class="form-horizontal" id="loginForm" role="form" method="POST">
+                    <div class="form-group row">
+                        <label class="col-sm-3 control-label" for="username">Username</label>
+                        <div class="col-sm-4">
+                            <input class="form-control" id="username" name="username" placeholder="Corp Username" required="required" type="text" value="">
+                        </div>
+                        <!-- end div_class -->
+                    </div>
+                    <!-- end form-group -->
+                    <div class="form-group row">
+                        <label class="col-sm-3 control-label" for="password">Password</label>
+                        <div class="col-sm-4">
+                            <input class="form-control" id="password" name="password" placeholder="Password" required="required" type="password" value="">
+                        </div>
+                        <!-- end div_class -->
+                    </div>
+                    <!-- end form-group -->
+                    <div class="form-group row">
+                        <div class="col-sm-offset-3 col-sm-3">
+                            <input id="noCorpId" type="checkbox" class="form-check-input" value="">I dont't have Corp Id to login
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-offset-3 col-sm-3">
+                            <input class="btn btn-success" name="submit" type="submit" value="Login">
+                        </div>
+                    </div>
+                    <!-- end form-group -->
+                    <input type="hidden" id="referencedBy" name="referencedBy" value="{{ReferencedBy}}" />
+                </form>
+                <form class="form-horizontal hidden" id="emailForm" role="form" method="POST">
+                    <div class="form-group row">
+                        <label class="col-sm-3 control-label" for="username">Email</label>
+                        <div class="col-sm-4">
+                            <input class="form-control" name="email" placeholder="Email" required="required" type="text" value="">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-offset-3 col-sm-3">
+                            <input class="btn btn-success" id="emailFormSubmit" name="submit" type="submit" value="Send Token">
+                        </div>
+                    </div>
+                </form>
+                <form class="form-horizontal hidden" id="tokenForm" role="form" method="POST">
+                    <div class="form-group row">
+                        <label class="col-sm-3 control-label" for="username">Email</label>
+                        <div class="col-sm-4">
+                            <input class="form-control"  name="email" placeholder="Email" type="text" value="" readonly>
+                        </div>
+                        <!-- end div_class -->
+                    </div>
+                    <!-- end form-group -->
+                    <div class="form-group row" id="tokenDiv">
+                        <label class="col-sm-3 control-label" for="token">Token</label>
+                        <div class="col-sm-4">
+                            <input class="form-control" id="token" name="token" placeholder="Token" required="required" type="token" value="">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-offset-3 col-sm-3">
+                            <input class="btn btn-success" id="tokenFormSubmit" name="submit" type="submit" value="Verify Token">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function getParameterByName(name) {
+        var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+
+    $(document).ready(function(){
+
+          //xyz email validation
+          $.validator.methods.email = function( value, element ) {
+              return this.optional( element ) || /[a-z]+@xyz\.com/.test( value );
+            }
+
+
+        $('#noCorpId').click(function(e){
+            console.log("checkbox is clicked: ", this.checked)
+            if(this.checked){
+                $('#loginForm').addClass('hidden')
+                $('#emailForm').removeClass('hidden')
+            }
+        })
+
+        $('#emailForm').validate({
+            rules: {
+                email: {
+                    required: true,
+                    email: true
+                }
+            },
+            messages: {
+              email: "Please enter valid xyz email id"
+            },
+            submitHandler: function(form) {
+                console.log("submit handler.....");
+                 var email = $('#emailForm input[name="email"]').val()
+            console.log("email=", email)
+                $.ajax({
+                    method: "POST",
+                    url: '/discussion-board/login/sendToken',
+                    data: {
+                        email: email
+                    }
+                })
+                .done(function(msg) {
+                    console.log("Data Saved: " + msg);
+                    $('#emailForm').addClass('hidden')
+                    $('#tokenForm').removeClass('hidden')
+                    $('#tokenForm input[name="email"]').val(email)
+                    $('#infoDiv').removeClass('hidden')
+                    $('#infoDiv span').text('Token has been sent to your email Id. please enter the token to proceed.')
+                })
+                .fail(function( jqXHR, textStatus, errorThrown){
+                    alert(errorThrown)
+                });
+
+            }
+        });
+
+
+        $('#tokenForm').validate({
+            rules: {
+                token: {
+                    required: true,
+                    number: true,
+                    minlength: 5,
+                    maxlength: 5
+                }
+            },
+            messages: {
+              token: {
+                   required: "Please enter a token sent in the email",
+                   number: "Please enter valid token"
+                }
+            },
+            submitHandler: function(form) {
+                console.log("submit handler.....");
+                var email = $('#tokenForm input[name="email"]').val()
+                var token = $('#tokenForm input[name="token"]').val()
+
+                console.log("email=", email, ", token=", token)
+
+                $.ajax({
+                    method: "POST",
+                    url: '/discussion-board/login/verifyToken',
+                    data: {
+                        email: email,
+                        token: token
+                    }
+                })
+                .done(function(msg) {
+                    console.log("Data Saved: " + msg);
+                    if(msg == "OK"){
+                        location.href = $('#referencedBy').val()
+                    } else {
+                        $('#infoDiv').addClass("hidden")
+                        $('#flashed-messages').removeClass("hidden")
+                        $('#flashed-messages span').text("Invalid token. Please enter the right one.")
+                    }
+                })
+                .fail(function( jqXHR, textStatus, errorThrown){
+                    console.log(textStatus, errorThrown)
+                });
+            }
+        });
+
+    })
+
+</script>

@@ -1,0 +1,35 @@
+{
+    "log": {
+	"dir": "./logs"
+	},
+	"db": {
+		"connectionString" : "localhost:27017"
+	},
+	"sessionCookie" : {
+        "secret": "D15cu5510n-B0@rd",
+        "path": "/",
+        "expiryTime": "60"
+	},
+    "authCookie": {
+        "secret": "D15cu5510n-B0@rd",
+        "path": "/",
+        "expiryTime": "2592000"
+    },
+    "tokenCookie": {
+        "secret": "D15cu5510n-B0@rd",
+        "path": "/",
+        "expiryTime": "86400"
+    },
+    "flashCookie": {
+        "secret": "D15cu5510n-B0@rd",
+        "expiryTime": "86400"
+    },
+    "ldapServer": {
+        "url": "localhost:389",
+        "baseDN": "DC=xyz,DC=com"
+    },
+    "email": {
+        "server": "mail.xyz.com",
+        "from": "test@xyz.com"
+    }
+}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        VOE Discussion Board
+    </title>
+    <!-- syntax highlighting -->
+    <link rel="stylesheet" href="/discussion-board/static/pygments.css">
+    <!-- bootstrap & aurora theme -->
+    <link rel="stylesheet" href="/discussion-board/static/styles.css">
+
+    <link rel="stylesheet" href="/discussion-board/static/summernote-0.8.9-dist/summernote-bs4.css">
+
+    <!-- jquery and bootstrap -->
+    <script src="/discussion-board/static/scripts.min.js"></script>
+    <script src="/discussion-board/static/summernote-0.8.9-dist/summernote-bs4.js"></script>
+    <script src="/discussion-board/static/jquery-validation-1.17.0/dist/jquery.validate.min.js"></script>
+    <script src="/discussion-board/static/jquery-validation-1.17.0/dist/additional-methods.min.js"></script>
+    <style>
+      .error {
+            color: red;
+        }
+
+       .popover{
+            max-width: 100%;
+       }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
+        <div class="container topnav" style="margin-left:0; margin-right:0;width:100%">
+            <div class="navbar-header" style="float:left; margin:0; padding-top:5px">
+                <img src="/discussion-board/static/images/logo.png" height="35" width="95" alt="logo">
+            </div>
+            <div class="navbar-header" style="padding-left: 10px">
+                <a class="navbar-brand topnav" href="/">VOE Discussion Board</a>
+            </div>
+            {{#UserName}}
+            <div class="navbar-header" style="padding-top:5px; float:right">
+                <a class="navbar-brand topnav" href="/discussion-board/logout">
+                  <i class="fa fa-sign-out" aria-hidden="true"></i>Logout
+                </a>
+            </div>
+            <div class="navbar-header" style="padding-top:5px; float:right">
+                <a class="navbar-brand topnav" href="#">
+                    <i class="fa fa-user-circle" aria-hidden="true"></i> {{UserName}}
+                </a>
+            </div>
+            {{/UserName}}
+
+            {{^HidePostQuestion}}
+            <div class="navbar-header" style="padding-top:5px;padding-right:15px;float:right">
+                <a href="/discussion-board/questionForm">
+                    <button id="postQuestionButton" type="button" class="btn btn-primary topnav">
+                      Post Question
+                    </button>
+                </a>
+            </div>
+            {{/HidePostQuestion}}
+        </div>
+        <!-- /.container -->
+    </nav>
+    {{{content}}}
+</body>
+
+</html>

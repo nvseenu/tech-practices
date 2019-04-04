@@ -1,0 +1,348 @@
+<!-- main forum layout -->
+<div class="discussionboard-layout">
+    <div class="container">
+        <input type="hidden" id="questionId" value="{{Id}}" /> {{#ErrorMessage}}
+        <div id="flashed-messages">
+            <div class="alert alert-danger">
+                <i class="fa fa-warning"></i> &nbsp;
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button> {{ErrorMessage}}
+            </div>
+        </div>
+        {{/ErrorMessage}}
+
+        <!-- the actual content block -->
+        <div class="topic-view">
+
+            <div class="row controls-row">
+                <div class="col-md-6 col-sm-6 col-xs-12 controls-col">
+                    <div class="pull-left">
+                        <ul class="pagination"></ul>
+                    </div>
+                </div>
+                <!-- end span pagination -->
+
+
+                <div class="col-md-6 col-sm-6 col-xs-12 controls-col">
+                    <div class="pull-right">
+                        <a href="/discussion-board/categories/{{Category}}/subcategories/{{SubCategory}}/questions/{{Id}}/answerForm" class="btn btn-primary">
+                                <span class="fa fa-pencil fa-fw"></span> Reply
+                          </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel topic-panel">
+                <div class="panel-heading topic-head">
+                    {{{Title}}}
+                </div>
+                <div class="panel-body topic-body">
+
+                    <div id="1430" class="row post-row clearfix">
+                        <div class="author col-md-2 col-sm-3 col-xs-12">
+                            <!-- Registered User -->
+                            <div class="author-name">
+                                <h4>{{CreatedBy.Name}}</h4>
+                            </div>
+
+                        </div>
+
+                        <div class="post-box col-md-10 col-sm-9 col-xs-12">
+                            <div class="post-meta clearfix">
+                                <div class="pull-left">
+                                    <!-- Creation date / Date modified -->
+                                    {{CreatedAt}}
+                                </div>
+
+                                <!-- Post number -->
+                                <div class="pull-right">
+                                    {{#Editable}}
+                                    <button class="btn btn-primary edit-question">Edit</button>
+                                    <button class="btn btn-primary hidden save-question">Save</button>
+                                    <button class="btn btn-primary hidden cancel-question">Cancel</button> {{/Editable}}
+                                    <strong>#1</strong>
+                                </div>
+                            </div>
+
+                            <div class="post-content clearfix" id="questionDescription">
+                                {{{Description}}}
+                            </div>
+
+                            <div class="post-footer clearfix">
+
+                                <!-- Report/Edit/Delete/Quote Post-->
+                                <div class="post-menu pull-right">
+                                </div>
+                                <!-- end post-menu -->
+                            </div>
+                            <!-- end footer -->
+
+                        </div>
+                    </div>
+
+                    {{#Answers}}
+                    <div class="row post-row clearfix">
+
+                        <div class="author col-md-2 col-sm-3 col-xs-12">
+                            <!-- Registered User -->
+                            <div class="author-name">
+                                <h4>{{CreatedBy.Name}}</h4>
+                            </div>
+
+                        </div>
+
+                        <div class="post-box col-md-10 col-sm-9 col-xs-12">
+                            <div class="post-meta clearfix">
+                                <div class="pull-left">
+                                    <!-- Creation date / Date modified -->
+                                    {{CreatedAt}}
+                                </div>
+
+                                <!-- Post number -->
+                                <div class="pull-right">
+                                    <button class="btn btn-primary edit-answer" data-answer-id="{{Id}}">
+                                Edit
+                            </button>
+                                    <button class="btn btn-primary hidden save-answer" data-answer-id="{{Id}}">
+                                Save
+                            </button>
+                                    <button class="btn btn-primary hidden cancel-answer" data-answer-id="{{Id}}">
+                                Cancel
+                            </button>
+                                    <strong>#{{SerialNum}}</strong>
+                                </div>
+                            </div>
+
+                            <div class="post-content clearfix" id="answerDescription-{{Id}}">
+                                {{{Description}}}
+                            </div>
+
+                            <div class="post-footer clearfix">
+                                <!-- Report/Edit/Delete/Quote Post-->
+                                <div class="post-menu pull-right">
+                                </div>
+                                <!-- end post-menu -->
+                            </div>
+                            <!-- end footer -->
+
+                        </div>
+                    </div>
+                    {{/Answers}}
+
+
+                </div>
+                <!-- end topic-body -->
+            </div>
+        </div>
+        <!-- end discussionboard-layout -->
+    </div>
+</div>
+
+<script>
+    function getParameterByName(name) {
+        var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+
+
+    $(document).ready(function() {
+
+
+
+        $('.edit-question').click(function(e) {
+            console.log("edit question button is clicked")
+            var questionId = $("#questionId").val()
+            editQuestion(questionId, $(e.target))
+        })
+
+        $('.cancel-question').click(function(e) {
+            console.log("cancel question button is clicked")
+            var descDiv = $("#questionDescription")
+            var prevContent = descDiv.html()
+            var desc = hideEditorAndGetData(descDiv)
+            descDiv.html(prevContent)
+            $(e.target).siblings('.edit-question').removeClass("hidden")
+            $(e.target).addClass('hidden')
+            $(e.target).siblings('.save-question').addClass("hidden")
+        })
+
+        $('.save-question').click(function(e) {
+            console.log("save question button is clicked")
+            var descDiv = $("#questionDescription")
+            var desc = hideEditorAndGetData(descDiv)
+
+            $(e.target).siblings('.edit-question').removeClass("hidden")
+            $(e.target).addClass('hidden')
+            $(e.target).siblings('.cancel-question').addClass("hidden")
+
+
+            var questionId = $("#questionId").val()
+            var url = "/discussion-board/questions/" + questionId
+
+            $.ajax({
+                    method: "PUT",
+                    url: url,
+                    data: {
+                        description: desc
+                    }
+                })
+                .done(function(msg) {
+                    console.log("Data Saved: " + msg);
+                });
+        })
+
+
+        $('.edit-answer').click(function(e) {
+            console.log("edit answer button is clicked")
+            var questionId = $("#questionId").val()
+            var answerId = $(e.target).data("answer-id")
+            console.log("answer id being edited is => ", answerId)
+            editAnswer(questionId, answerId, $(e.target))
+        })
+
+        $('.cancel-answer').click(function(e) {
+            console.log("cancel answer button is clicked")
+            var postId = $(e.target).data("post-id")
+            console.log("answer id to be saved => ", answerId)
+            var descDiv = $("#answerDescription-" + answerId)
+            var prevContent = descDiv.html()
+            hideEditorAndGetData(descDiv)
+            descDiv.html(prevContent)
+
+            $(e.target).siblings('.edit-answer').removeClass("hidden")
+            $(e.target).addClass('hidden')
+            $(e.target).siblings('.save-answer').addClass("hidden")
+        })
+
+        $('.save-answer').click(function(e) {
+            console.log("save answer button is clicked :", $(e.target))
+            var answerId = $(e.target).data("answer-id")
+            console.log("answer id to be saved => ", answerId)
+
+            var descDiv = $("#answerDescription-" + answerId)
+            var desc = hideEditorAndGetData(descDiv)
+            console.log("save desc :", desc)
+
+            $(e.target).siblings('.edit-answer').removeClass("hidden")
+            $(e.target).addClass('hidden')
+            $(e.target).siblings('.cancel-answer').addClass("hidden")
+
+
+            var cat = $("#category").val()
+            var subcat = $("#subcategory").val()
+            var questionId = $("#questionId").val()
+
+            var url = "/discussion-board/questions/" + questionId + "/answers/" + answerId
+
+            $.ajax({
+                    method: "PUT",
+                    url: url,
+                    data: {
+                        description: desc
+                    }
+                })
+                .done(function(msg) {
+                    console.log("Data Saved: " + msg);
+                });
+        })
+
+        function showEditor(div) {
+            console.log("show editor for div : ", div)
+            div.summernote({
+                focus: true,
+                toolbar: [
+                    ["style", ["bold", "italic", "underline", "clear"]],
+                    ['para', ['ul', 'ol', 'paragraph']]
+                ],
+                tabsize: 2,
+                height: div.parent().height()
+            });
+            div.focusout(function(e) {
+                hideEditorAndGetData(div)
+            })
+        }
+
+        function hideEditorAndGetData(div) {
+            var desc = div.summernote('code')
+            console.log("save desc :", desc)
+            div.summernote('destroy')
+            return desc;
+        }
+
+        function editQuestion(questionId, editButton) {
+            $.ajax({
+                    method: "GET",
+                    url: "/discussion-board/questions/" + questionId + "/authorizedToEdit",
+                })
+                .done(function(data, status, jqXHR) {
+                    console.log("Current user is authorized to edit: ", data)
+                    if (data === "NOT_AUTHENTICATED") {
+                        location.href = "/discussion-board/login?" +
+                            "referencedBy=/discussion-board/questions/" + questionId + "?action=EditQuestion"
+                    } else if (data == "SESSION_EXPIRED") {
+                        location.href = "/discussion-board/login?" +
+                            "referencedBy=/discussion-board/questions/" + questionId + "?action=EditQuestion" +
+                            "&errorMessage=" + encodeURI("Session Expired. Please login again.")
+                    } else if (data == "NOT_AUTHORIZED") {
+                        alert("You are not authroized to edit the description!!!")
+                    } else if (data == "AUTHORIZED") {
+                        var descDiv = $("#questionDescription")
+                        showEditor(descDiv)
+                        editButton.siblings('.save-question').removeClass("hidden")
+                        editButton.siblings('.cancel-question').removeClass("hidden")
+                        editButton.addClass('hidden')
+                    }
+                })
+                .fail(function(jqXHR, status, error) {
+                    console.log("Error : ", error);
+                });
+        }
+
+        function editAnswer(questionId, answerId, editButton) {
+            $.ajax({
+                    method: "GET",
+                    url: "/discussion-board/questions/" + questionId + "/answers/" + answerId + "/authorizedToEdit",
+                })
+                .done(function(data, status, jqXHR) {
+                    console.log("Current user is authorized to edit: ", data)
+                    if (data === "NOT_AUTHENTICATED") {
+                        location.href = "/discussion-board/login?" +
+                            "referencedBy=/discussion-board/questions/" + questionId + "?action=EditAnswer" + answerId
+                    } else if (data == "SESSION_EXPIRED") {
+                        location.href = "/discussion-board/login?" +
+                            "referencedBy=/discussion-board/questions/" + questionId + "?action=EditAnswer" + answerId +
+                            "&errorMessage=" + encodeURI("Session Expired. Please login again.")
+                    } else if (data == "NOT_AUTHORIZED") {
+                        alert("You are not authroized to edit the description!!!")
+                    } else if (data == "AUTHORIZED") {
+                        var descDiv = $("#answerDescription-" + answerId)
+                        console.log("content=>", descDiv.html())
+                        showEditor(descDiv)
+                        editButton.siblings('.save-answer').removeClass("hidden")
+                        editButton.siblings('.cancel-answer').removeClass("hidden")
+                        editButton.addClass('hidden')
+                    }
+                })
+                .fail(function(jqXHR, status, error) {
+                    console.log("Error : ", error);
+                });
+        }
+
+        var action = getParameterByName("action")
+        console.log("Action tried by user before login : ", action)
+        if (action == null) {
+            return
+        }
+        if (action === "EditQuestion") {
+            console.log("clicking edit description")
+            console.log("edit question, => ", $('.edit-question'))
+            $('.edit-question').click()
+        } else if (action.startsWith("EditAnswer")) {
+            //After removing EditPost keyword, what remaining is post id
+            var answerId = action.replace("EditAnswer", "")
+            console.log("Editor should be displayed for answerId: ", answerId)
+            var button = $(".edit-answer[data-answer-id=" + answerId + "]")
+            console.log("button = ", button)
+            button.click()
+        }
+    })
+</script>

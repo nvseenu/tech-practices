@@ -1,0 +1,87 @@
+<!-- main forum layout -->
+<div class="flaskbb-layout">
+    <div class="container">
+        <div class="panel page-panel">
+            <div class="panel-heading page-head">
+                Reply Form
+            </div>
+
+            <div class="panel-body">
+                <form class="form-horizontal" role="form" method="POST">
+                    <div class="form-group row">
+                        <label class="col-sm-3 control-label" for="title">Question:</label>
+                        <div id="popoverDiv" class="col-sm-8">
+                            <label class="control-label" id="popoverData" href="#" data-html="true" data-content="{{Description}}" rel="popover" data-placement="bottom" data-original-title="Description" data-trigger="hover">
+                              {{Title}}
+                            </label>
+                        </div>
+                        <!-- end div_class -->
+                    </div>
+                    {{#Form}}
+                    <div class="form-group row">
+                        <label class="col-sm-3 control-label" for="description">Description</label>
+                        <div class="col-sm-8">
+                            <textarea class="form-control summernote" rows="20" id="description" name="description" placeholder="Description" required="required">
+                            {{Description}}
+                            </textarea>
+                            <label id="descriptionError" class="error"> </label>
+                        </div>
+                    </div>
+                    {{/Form}}
+                    <!-- end form-group -->
+                    <div class="form-group row">
+                        <div class="col-sm-offset-10 col-sm-3">
+                            <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Post">
+                        </div>
+                    </div>
+                    <!-- end form-group -->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+
+        $('#popoverData').popover({
+             container: '#popoverDiv'
+        });
+
+
+        $('.summernote').summernote({
+            toolbar: [
+                ["style", ["bold", "italic", "underline", "clear"]],
+                ['para', ['ul', 'ol', 'paragraph']]
+            ],
+            tabsize: 2,
+            height: 300
+        })
+
+         // Tried form valiation through jquery validator framework. unfortunately the
+         // framework did not work well with summernote. Even if i skipped summernote field from validator framework,
+         // still it gave trouble. So i implemented the validation manually.
+         $('form').submit(function(e){
+            var errorFound = false;
+            var desc =  $('.summernote').summernote('code')
+            console.log("desc length ==>", desc.trim().length)
+            if(desc.trim().length == 0){
+                $('#descriptionError').text('This field is required.')
+                errorFound = true
+            } else {
+                $('#descriptionError').text('')
+            }
+            if(errorFound){
+                e.preventDefault();
+                e.stopPropagation();
+            } else {
+                //To disable double form submit
+                if (submitted) {
+                    e.preventDefault()
+                    e.stopPropagation()
+                }
+                submitted = true
+            }
+        });
+
+    })
+</script>
