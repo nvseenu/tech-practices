@@ -1,0 +1,565 @@
+<html>
+    <head>
+      <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>      <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
+        <style> 
+          .Timeline {
+  display: flex;
+   /*justify-content: center;*/
+   /*height: 15px;*/
+   /*border: 1px solid red;*/
+   justify-content: space-between;
+    /*width: 100%;*/
+}
+
+.Timebar {
+  background-color: green;
+ /*margin: 2px;
+  width: 60px;*/
+  height:15px;
+  flex:1;
+  margin-right:1.5px;
+  margin-left:1.5px;
+  position:relative;
+}
+
+.TimebarTable{
+  height:100%;
+  width:100%;
+  border-spacing: 0px;
+  padding: 0;
+}
+
+.td{
+  padding: 0;
+  height: 100%;
+}
+
+
+
+
+ .red {
+   background-color: red;
+ }
+
+.grey {
+   background-color: grey;
+ }
+
+ .GreenBarRow {
+  display:flex;
+  justify-content: space-between;
+}
+.GreenBar {
+  height:15px;
+  flex:1;
+  margin-right:1.5px;
+  margin-left:1.5px;
+  position:relative;
+}
+.GreenBarFiller {
+  position:absolute;
+}
+     
+        </style>    
+    </head>
+    <body>
+    <script type="text/babel">
+
+  var classes = {
+     Grey: "grey"
+   };
+  
+  class Timebar extends React.Component {
+  
+  constructor(props){
+      super(props);   
+      this.state = { hours: []};        
+  }
+
+  findMatchingTimeUnits(event, timeUnits){
+    var  startUnits  = timeUnits.filter(t => t.startTime <= event.startTime.getTime());
+    if(startUnits.length == 0){
+      return [];
+    }
+    var startUnit = startUnits[startUnits.length - 1];
+      if(startUnit == undefined){
+       return [];
+    }
+  
+
+    var endUnit = timeUnits.find(t =>  t.endTime.getTime() > event.endTime.getTime());
+      if(endUnit == undefined) {
+        return [];
+      }   
+    var tunits = timeUnits.filter(t => t.startTime.getTime() >= startUnit.startTime.getTime()
+                           && t.endTime.getTime() <= endUnit.endTime.getTime());
+         
+
+    tunits = tunits.filter(t => t.startTime.getTime() >= startUnit.startTime.getTime()
+             && t.endTime.getTime() <= endUnit.endTime.getTime());
+    return tunits;
+ }
+
+
+ componentDidMount(){
+  console.log("componentDidMount()Timebar: ", this.props.data.id, "events:", this.props.data.events.length);
+  console.log("Timebar: ", this.props.data.id, "starttime:", this.props.data.startTime);
+  var st = new Date(this.props.data.startTime);
+  var hours = [];
+  for(var i=0; i<24; i++) {
+    var et = new Date(st);
+    et.setHours(st.getHours() + 1);
+    var hour = {
+      id: i,
+      startTime: st,
+      endTime: et, 
+      events:[]
+    };
+    hours.push(hour);
+    st = et;
+  }
+  var events = this.props.data.events;
+  events.forEach(e => {
+    var matchingHours = this.findMatchingTimeUnits(e, hours);
+    console.log('For event:', e, " matching timebars are ");
+    console.log(matchingHours); 
+    matchingHours.forEach(h => {
+      h.events = [e];
+      h.title = "Disconnection happened between " + e.startTime + "and " + e.endTime;
+      h.class = "red";
+  });
+})
+var firstConnectionStartTime = this.props.data.connectionStartTime;
+if(firstConnectionStartTime.getTime() >= this.props.data.endTime.getTime()) {
+  firstConnectionStartTime = this.props.data.endTime;
+}
+console.log("connection start time::: ", this.props.data.connectionStartTime, "firstConnectionStartTime::: ", firstConnectionStartTime);
+
+if(firstConnectionStartTime.getTime() > this.props.data.startTime.getTime()){
+var greyEvent = {
+  startTime: this.props.data.startTime,
+  endTime: firstConnectionStartTime
+};
+console.log("grey event:::", greyEvent);
+var greyUnits = this.findMatchingTimeUnits(greyEvent, hours);
+greyUnits.forEach(g => { 
+ g.events = [greyEvent];
+ g.class = classes.Grey;
+})
+console.log("matching grey units:", greyUnits);
+}
+    this.setState({
+       hours: hours
+    });
+ }
+  
+  render(){
+      console.log("rendering timebar::", this.props.data.id);
+      var cols = [];
+      for(var i=0; i<24; i++){
+         var className = classes.td;
+         var title = "";
+         var hour =  this.state.hours[i];
+         if(hour != undefined && hour.events != undefined && hour.events.length > 0){
+              className += " " + hour.class;
+              //console.log("hour with matching event::", hour);
+              title = hour.title;
+         }
+         cols.push(
+            (<td key={i} id={i} class={className} title={title}> </td>)
+         );                
+      }
+       
+    
+      return (
+        <div id={this.props.data.id} key={this.props.data.id} class="Timebar"> 
+          <table class="TimebarTable">
+            <tbody >
+              <tr >
+                 {cols}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      ); 
+  }
+};
+
+class MinutesTimebar extends React.Component {
+  
+  constructor(props){
+      super(props);   
+      this.state = { hours: []};        
+  }
+
+  findMatchingTimeUnits(event, timeUnits){
+    var  startUnits  = timeUnits.filter(t => t.startTime <= event.startTime.getTime());
+    if(startUnits.length == 0){
+      return [];
+    }
+    var startUnit = startUnits[startUnits.length - 1];
+    if(startUnit == undefined){
+       return [];
+    }
+    var endUnit = timeUnits.find(t =>  t.endTime.getTime() > event.endTime.getTime());
+      if(endUnit == undefined) {
+        return [];
+      }   
+    var tunits = timeUnits.filter(t => t.startTime.getTime() >= startUnit.startTime.getTime()
+                           && t.endTime.getTime() <= endUnit.endTime.getTime());
+    return tunits;
+ }
+
+ componentDidMount(){
+  console.log("Minutes Timebar: ", this.props.data.id, "::::componentDidMount()");
+  var st = new Date(this.props.data.startTime);
+  var hours = [];
+  for(var i=0; i<24*60; i++) {
+    var et = new Date(st);
+    et.setMinutes(st.getMinutes() + 1);
+    var hour = {
+      startTime: st,
+      endTime: et, 
+      events:[]
+    };
+    hours.push(hour);
+    st = et;
+  }
+  var events = this.props.data.events;
+    events.forEach(e => {
+      var matchingHours = this.findMatchingTimeUnits(e, hours);
+      console.log('For event:', e, " matching timebars are ");
+      console.log(matchingHours); 
+      matchingHours.forEach(h => {
+        h.events = [e];
+        h.title = "Disconnection happened between " + e.startTime + "and " + e.endTime;
+        h.class = "red";
+  });
+});
+
+var firstConnectionStartTime = this.props.data.connectionStartTime;
+if(firstConnectionStartTime.getTime() >= this.props.data.endTime.getTime()) {
+  firstConnectionStartTime = this.props.data.endTime;
+}
+console.log("connection start time::: ", this.props.data.connectionStartTime, "firstConnectionStartTime::: ", firstConnectionStartTime);
+
+if(firstConnectionStartTime.getTime() > this.props.data.startTime.getTime()){
+var greyEvent = {
+  startTime: this.props.data.startTime,
+  endTime: firstConnectionStartTime
+};
+console.log("grey event:::", greyEvent);
+var greyUnits = this.findMatchingTimeUnits(greyEvent, hours);
+greyUnits = greyUnits.filter(g => g.class != 'red');
+greyUnits.forEach(g => { 
+ g.events = [greyEvent];
+ g.class = classes.Grey;
+})
+console.log("matching grey units:", greyUnits);
+}
+
+
+    this.setState({
+       hours: hours
+    });
+ }
+
+  
+  render(){
+      console.log("rendering minutes timebar::", this.props.data.id);
+      var cols = [];
+      for(var i=0; i<24*60; i++){
+         var className = classes.td;
+         var title = "";
+         var hour =  this.state.hours[i];
+         if(hour != undefined && hour.events != undefined && hour.events.length > 0){
+              className += " " + hour.class;
+              title = hour.title;
+         }
+         cols.push(
+            (<td key={i} id={i} class={className} title={title}> </td>)
+         );                
+      }
+       
+    
+      return (
+        <div id={this.props.data.id} key={this.props.data.id} class="Timebar"> 
+          <table class="TimebarTable">
+            <tbody >
+              <tr >
+                 {cols}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      ); 
+  }
+};
+
+
+
+
+
+
+class Last24HoursTimeline extends React.Component {
+  constructor(props){
+      super(props);
+  }
+  
+  
+  
+  componentDidMount(){
+  
+  
+  } 
+ 
+  getDates(startDate, stopDate) {
+      var dateArray = new Array();
+      var currentDate = startDate;
+      while (currentDate <= stopDate) {
+          dateArray.push(new Date (currentDate));
+          var cdate = new Date(currentDate);
+          cdate.setDate(cdate.getDate() + 1);
+          currentDate = cdate;
+      }
+      return dateArray;
+  }
+
+  prepareTimebarsData(props){
+    var endTime = new Date();
+    var startTime = new Date(endTime);
+    startTime.setDate(endTime.getDate()-1);
+    console.log("Last 24 hrs Timeline start time::", startTime, "endtime", endTime);
+
+    var matchingEvents = props.data.events.filter(function(event){
+      var res = (event.startTime.getTime() >= startTime.getTime() && event.endTime.getTime() <= endTime.getTime());
+      return res;  
+    });
+    var bars = [{
+           id: 0,
+           startTime: startTime,
+           endTime: endTime,
+           events: matchingEvents,
+           connectionStartTime: props.data.connectionStartTime            
+     }];
+     return bars;          
+  }
+
+  render(){
+    console.log("rendering last 24 hours timeline");
+    var bars = this.prepareTimebarsData(this.props);
+    //console.log("timebars:::", bars);
+    var events = this.props.data.events;            
+    var timebars = bars.map(function(bar, i){                
+           return (
+             <MinutesTimebar data={bar}/>
+           );
+    });                
+
+    return (<div class="Timeline">
+        {timebars}  
+    </div>)
+
+ }
+
+}
+
+
+class Last7DaysTimeline extends React.Component {
+  constructor(props){
+      super(props);
+  }
+
+  componentDidMount(){
+       
+  } 
+ 
+  findMatchingTimeUnits(event, timeUnits){
+    var  startUnits  = timeUnits.filter(t => t.startTime <= event.startTime.getTime());
+    if(startUnits.length == 0){
+       return [];
+    }
+    var startUnit = startUnits[startUnits.length - 1];
+
+    var endUnit = timeUnits.find(t =>  t.endTime.getTime() > event.endTime.getTime()); 
+    if(endUnit == undefined) {
+      return [startUnit];
+    }
+    var tunits = timeUnits.filter(t => t.startTime.getTime() >= startUnit.startTime.getTime()
+                           && t.endTime.getTime() <= endUnit.endTime.getTime());
+    return tunits;
+ }
+
+
+
+  getDates(startDate, stopDate) {
+      var dateArray = new Array();
+      var currentDate = startDate;
+      while (currentDate < stopDate) {
+          dateArray.push(new Date (currentDate));
+          var cdate = new Date(currentDate);
+          cdate.setDate(cdate.getDate() + 1);
+          currentDate = cdate;
+      }
+      return dateArray;
+    }
+  
+  prepareTimebarsData(props){
+    var endTime = new Date();
+    var startTime = new Date(endTime);
+    startTime.setDate(endTime.getDate()-7);
+    console.log("Last 7 days Timeline start time::", startTime);
+    console.log("Last 7 days Timeline end time::", endTime);
+
+    var dates = this.getDates(startTime, endTime);
+    var bars = [];
+    dates = dates.map(function(startDate, idx){
+       var endDate = new Date(startDate);
+       endDate.setHours(startDate.getHours() + 23);
+
+       return {
+           id: idx,
+           startTime: startDate,
+           endTime: endDate,
+           events: [],
+           connectionStartTime: props.data.connectionStartTime
+        };
+    });
+   props.data.events.forEach(e => {
+      var matchingDates = this.findMatchingTimeUnits(e, dates);
+      console.log('For event:', e, " matching dates are ");
+      console.log(matchingDates); 
+      matchingDates.forEach(h => { 
+        var e1 = Object.assign({}, e);
+        if(e1.startTime.getTime() <= h.startTime.getTime()) {
+          e1.startTime = h.startTime;
+        }
+        if(e1.endTime.getTime() >= h.endTime.getTime()) {
+          e1.endTime = h.endTime;
+        }
+        h.events.push(e1);
+    }); 
+  }); 
+    return dates;
+  }
+
+  render(){
+    console.log("rendering last 7 days timeline with events::", this.props.data.events.length);
+    var bars = this.prepareTimebarsData(this.props);
+    console.log("timebars:::", bars);
+    var events = this.props.data.events;            
+    var timebars = bars.map(function(bar, i){                
+           return (
+             <Timebar data={bar}/>
+           );
+    });                
+
+    return (<div class="Timeline">
+        {timebars}  
+    </div>)
+
+ }
+
+}
+
+
+class Last30DaysTimeline extends React.Component {
+  constructor(props){
+      super(props);
+  }
+
+  componentDidMount(){
+       
+  } 
+
+  getDates(startDate, stopDate) {
+      var dateArray = new Array();
+      var currentDate = startDate;
+      while (currentDate < stopDate) {
+          dateArray.push(new Date (currentDate));
+          var cdate = new Date(currentDate);
+          cdate.setDate(cdate.getDate() + 1);
+          currentDate = cdate;
+      }
+      return dateArray;
+  }
+
+  prepareTimebarsData(props){
+    var endTime = new Date();
+    var startTime = new Date(endTime);
+    startTime.setDate(endTime.getDate()-30);
+    console.log("Last 30 days Timeline start time::", startTime);
+    console.log("Last 30 days Timeline end time::", endTime);
+
+    var dates = this.getDates(startTime, endTime);
+    var bars = [];
+    return dates.map(function(startDate, idx){
+       var endDate = new Date(startDate);
+       endDate.setHours(startDate.getHours() + 23);
+      var matchingEvents = props.data.events.filter(function(event){
+          var res = (event.startTime.getTime() >= startDate.getTime() && event.endTime.getTime() <= endDate.getTime());
+          return res;  
+        });
+       return {
+           id: idx,
+           startTime: startDate,
+           endTime: endDate,
+           events: matchingEvents,
+           connectionStartTime: props.data.connectionStartTime
+        };
+    });
+
+  }
+
+  render(){    
+    console.log("rendering last 30  days timeline");        
+    var bars = this.prepareTimebarsData(this.props);
+    //console.log("timebars:::", bars);
+    var events = this.props.data.events;            
+    var timebars = bars.map(function(bar, i){                
+           return (
+             <Timebar data={bar}/>
+           );
+    });                
+
+    return (<div class="Timeline">
+        {timebars}  
+    </div>)
+
+ }
+
+}     
+
+      var data = {
+          events: [
+          {startTime: new Date(2019, 5 , 24, 10, 30, 30),  endTime: new Date(2019, 5 , 24, 11, 30, 30), class: 'red'},
+           {startTime: new Date(2019, 5 , 26, 0, 0, 0),  endTime: new Date(2019, 5 , 28, 0, 0, 0), class: 'red'}
+      ],
+
+       connectionStartTime: new Date(2019, 5 , 24, 10, 30, 30)
+       };
+       
+        ReactDOM.render(
+          <Last7DaysTimeline data={data}/>,
+          document.getElementById("t1")
+       )
+
+      /*ReactDOM.render(
+          <Last30DaysTimeline data={data}/>,
+          document.getElementById("t2")
+       )
+
+       ReactDOM.render(
+          <Last24HoursTimeline data={data}/>,
+          document.getElementById("t3")
+       )*/
+    </script>
+
+          <div id="t1"> </div>
+          <div id="t2"> </div>
+          <div id="t3"> </div>
+
+    </body>
+</html>
