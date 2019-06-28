@@ -68,9 +68,38 @@
     <script type="text/babel">
 
   var classes = {
-     Grey: "grey"
+     td:  "td",
+     Grey: "grey",
+     red: "red",
+     Timebar: "Timebar",
+     TimebarTable: "TimebarTable",
+     Timeline: "Timeline"
    };
   
+  function findMatchingTimeUnits(event, timeUnits){
+     
+    console.log('For event ', event);
+    var  includesBothUnits  = timeUnits.filter(t => event.startTime.getTime() >= t.startTime.getTime()  && event.endTime.getTime() <= t.endTime.getTime());
+    console.log('includesBothUnits:::',includesBothUnits)    
+    
+    var includesStartTimeUnits  = timeUnits.filter(t => event.startTime.getTime() >= t.startTime.getTime() && event.endTime.getTime() >= t.endTime.getTime() && event.startTime.getTime() <= t.endTime.getTime());  
+    console.log('includesStartTimeUnits:::',includesStartTimeUnits);
+
+
+    var includesEndTimeUnits  = timeUnits.filter(t => event.startTime.getTime() <= t.startTime.getTime() && event.endTime.getTime() <= t.endTime.getTime() && event.endTime.getTime() >= t.startTime.getTime());
+    console.log('includesEndTimeUnits:::',includesEndTimeUnits);   
+   
+
+    var spreadAcrossUnits = timeUnits.filter(t => event.startTime.getTime() <= t.startTime.getTime() && event.endTime.getTime() >= t.endTime.getTime());
+console.log('spreadAcrossUnits:::',spreadAcrossUnits);
+ 
+
+    return includesStartTimeUnits
+              .concat(includesBothUnits)
+              .concat(spreadAcrossUnits)
+              .concat(includesEndTimeUnits);
+ }
+
   class Timebar extends React.Component {
   
   constructor(props){
@@ -78,29 +107,7 @@
       this.state = { hours: []};        
   }
 
-  findMatchingTimeUnits(event, timeUnits){
-    var  startUnits  = timeUnits.filter(t => t.startTime <= event.startTime.getTime());
-    if(startUnits.length == 0){
-      return [];
-    }
-    var startUnit = startUnits[startUnits.length - 1];
-      if(startUnit == undefined){
-       return [];
-    }
   
-
-    var endUnit = timeUnits.find(t =>  t.endTime.getTime() > event.endTime.getTime());
-      if(endUnit == undefined) {
-        return [];
-      }   
-    var tunits = timeUnits.filter(t => t.startTime.getTime() >= startUnit.startTime.getTime()
-                           && t.endTime.getTime() <= endUnit.endTime.getTime());
-         
-
-    tunits = tunits.filter(t => t.startTime.getTime() >= startUnit.startTime.getTime()
-             && t.endTime.getTime() <= endUnit.endTime.getTime());
-    return tunits;
- }
 
 
  componentDidMount(){
@@ -122,7 +129,7 @@
   }
   var events = this.props.data.events;
   events.forEach(e => {
-    var matchingHours = this.findMatchingTimeUnits(e, hours);
+    var matchingHours = findMatchingTimeUnits(e, hours);
     console.log('For event:', e, " matching timebars are ");
     console.log(matchingHours); 
     matchingHours.forEach(h => {
@@ -130,7 +137,7 @@
       h.title = "Disconnection happened between " + e.startTime + "and " + e.endTime;
       h.class = "red";
   });
-})
+});
 var firstConnectionStartTime = this.props.data.connectionStartTime;
 if(firstConnectionStartTime.getTime() >= this.props.data.endTime.getTime()) {
   firstConnectionStartTime = this.props.data.endTime;
@@ -143,7 +150,7 @@ var greyEvent = {
   endTime: firstConnectionStartTime
 };
 console.log("grey event:::", greyEvent);
-var greyUnits = this.findMatchingTimeUnits(greyEvent, hours);
+var greyUnits = findMatchingTimeUnits(greyEvent, hours);
 greyUnits.forEach(g => { 
  g.events = [greyEvent];
  g.class = classes.Grey;
@@ -174,8 +181,8 @@ console.log("matching grey units:", greyUnits);
        
     
       return (
-        <div id={this.props.data.id} key={this.props.data.id} class="Timebar"> 
-          <table class="TimebarTable">
+        <div id={this.props.data.id} key={this.props.data.id} class={classes.Timebar}> 
+          <table class={classes.TimebarTable}>
             <tbody >
               <tr >
                  {cols}
@@ -194,24 +201,7 @@ class MinutesTimebar extends React.Component {
       this.state = { hours: []};        
   }
 
-  findMatchingTimeUnits(event, timeUnits){
-    var  startUnits  = timeUnits.filter(t => t.startTime <= event.startTime.getTime());
-    if(startUnits.length == 0){
-      return [];
-    }
-    var startUnit = startUnits[startUnits.length - 1];
-    if(startUnit == undefined){
-       return [];
-    }
-    var endUnit = timeUnits.find(t =>  t.endTime.getTime() > event.endTime.getTime());
-      if(endUnit == undefined) {
-        return [];
-      }   
-    var tunits = timeUnits.filter(t => t.startTime.getTime() >= startUnit.startTime.getTime()
-                           && t.endTime.getTime() <= endUnit.endTime.getTime());
-    return tunits;
- }
-
+  
  componentDidMount(){
   console.log("Minutes Timebar: ", this.props.data.id, "::::componentDidMount()");
   var st = new Date(this.props.data.startTime);
@@ -229,7 +219,7 @@ class MinutesTimebar extends React.Component {
   }
   var events = this.props.data.events;
     events.forEach(e => {
-      var matchingHours = this.findMatchingTimeUnits(e, hours);
+      var matchingHours = findMatchingTimeUnits(e, hours);
       console.log('For event:', e, " matching timebars are ");
       console.log(matchingHours); 
       matchingHours.forEach(h => {
@@ -251,7 +241,7 @@ var greyEvent = {
   endTime: firstConnectionStartTime
 };
 console.log("grey event:::", greyEvent);
-var greyUnits = this.findMatchingTimeUnits(greyEvent, hours);
+var greyUnits = findMatchingTimeUnits(greyEvent, hours);
 greyUnits = greyUnits.filter(g => g.class != 'red');
 greyUnits.forEach(g => { 
  g.events = [greyEvent];
@@ -285,8 +275,8 @@ console.log("matching grey units:", greyUnits);
        
     
       return (
-        <div id={this.props.data.id} key={this.props.data.id} class="Timebar"> 
-          <table class="TimebarTable">
+        <div id={this.props.data.id} key={this.props.data.id} class={classes.Timebar}> 
+          <table class={classes.TimebarTable}>
             <tbody >
               <tr >
                  {cols}
@@ -358,7 +348,7 @@ class Last24HoursTimeline extends React.Component {
            );
     });                
 
-    return (<div class="Timeline">
+    return (<div class={classes.Timeline}>
         {timebars}  
     </div>)
 
@@ -376,24 +366,7 @@ class Last7DaysTimeline extends React.Component {
        
   } 
  
-  findMatchingTimeUnits(event, timeUnits){
-    var  startUnits  = timeUnits.filter(t => t.startTime <= event.startTime.getTime());
-    if(startUnits.length == 0){
-       return [];
-    }
-    var startUnit = startUnits[startUnits.length - 1];
-
-    var endUnit = timeUnits.find(t =>  t.endTime.getTime() > event.endTime.getTime()); 
-    if(endUnit == undefined) {
-      return [startUnit];
-    }
-    var tunits = timeUnits.filter(t => t.startTime.getTime() >= startUnit.startTime.getTime()
-                           && t.endTime.getTime() <= endUnit.endTime.getTime());
-    return tunits;
- }
-
-
-
+ 
   getDates(startDate, stopDate) {
       var dateArray = new Array();
       var currentDate = startDate;
@@ -410,14 +383,14 @@ class Last7DaysTimeline extends React.Component {
     var endTime = new Date();
     var startTime = new Date(endTime);
     startTime.setDate(endTime.getDate()-7);
-    console.log("Last 7 days Timeline start time::", startTime);
-    console.log("Last 7 days Timeline end time::", endTime);
+    console.log("Last 7 days Timeline start time::", startTime.toString());
+    console.log("Last 7 days Timeline end time::", endTime.toString());
 
     var dates = this.getDates(startTime, endTime);
     var bars = [];
     dates = dates.map(function(startDate, idx){
        var endDate = new Date(startDate);
-       endDate.setHours(startDate.getHours() + 23);
+       endDate.setHours(startDate.getHours() + 24);
 
        return {
            id: idx,
@@ -427,19 +400,12 @@ class Last7DaysTimeline extends React.Component {
            connectionStartTime: props.data.connectionStartTime
         };
     });
+    console.log("Date ranges are:", dates);
    props.data.events.forEach(e => {
-      var matchingDates = this.findMatchingTimeUnits(e, dates);
-      console.log('For event:', e, " matching dates are ");
-      console.log(matchingDates); 
-      matchingDates.forEach(h => { 
-        var e1 = Object.assign({}, e);
-        if(e1.startTime.getTime() <= h.startTime.getTime()) {
-          e1.startTime = h.startTime;
-        }
-        if(e1.endTime.getTime() >= h.endTime.getTime()) {
-          e1.endTime = h.endTime;
-        }
-        h.events.push(e1);
+      var matchingDates = findMatchingTimeUnits(e, dates);
+
+      matchingDates.forEach(d => {        
+        d.events.push(e);
     }); 
   }); 
     return dates;
@@ -456,12 +422,10 @@ class Last7DaysTimeline extends React.Component {
            );
     });                
 
-    return (<div class="Timeline">
+    return (<div class={classes.Timeline}>
         {timebars}  
     </div>)
-
- }
-
+  }
 }
 
 
@@ -485,7 +449,7 @@ class Last30DaysTimeline extends React.Component {
       }
       return dateArray;
   }
-
+ 
   prepareTimebarsData(props){
     var endTime = new Date();
     var startTime = new Date(endTime);
@@ -495,22 +459,27 @@ class Last30DaysTimeline extends React.Component {
 
     var dates = this.getDates(startTime, endTime);
     var bars = [];
-    return dates.map(function(startDate, idx){
+    dates = dates.map(function(startDate, idx){
        var endDate = new Date(startDate);
-       endDate.setHours(startDate.getHours() + 23);
-      var matchingEvents = props.data.events.filter(function(event){
-          var res = (event.startTime.getTime() >= startDate.getTime() && event.endTime.getTime() <= endDate.getTime());
-          return res;  
-        });
+       endDate.setHours(startDate.getHours() + 24);
+
        return {
            id: idx,
            startTime: startDate,
            endTime: endDate,
-           events: matchingEvents,
+           events: [],
            connectionStartTime: props.data.connectionStartTime
         };
     });
+    console.log("Date ranges are:", dates);
+    props.data.events.forEach(e => {
+      var matchingDates = findMatchingTimeUnits(e, dates);
 
+      matchingDates.forEach(d => {        
+        d.events.push(e);
+      }); 
+    }); 
+    return dates;
   }
 
   render(){    
@@ -524,7 +493,7 @@ class Last30DaysTimeline extends React.Component {
            );
     });                
 
-    return (<div class="Timeline">
+    return (<div class={classes.Timeline}>
         {timebars}  
     </div>)
 
@@ -534,11 +503,10 @@ class Last30DaysTimeline extends React.Component {
 
       var data = {
           events: [
-          {startTime: new Date(2019, 5 , 24, 10, 30, 30),  endTime: new Date(2019, 5 , 24, 11, 30, 30), class: 'red'},
-           {startTime: new Date(2019, 5 , 26, 0, 0, 0),  endTime: new Date(2019, 5 , 28, 0, 0, 0), class: 'red'}
+           {startTime: new Date(2019, 5 , 26, 0, 0, 0),  endTime: new Date(2019, 5 , 28, 10, 33  , 0), class: 'red'}
       ],
 
-       connectionStartTime: new Date(2019, 5 , 24, 10, 30, 30)
+       connectionStartTime: new Date(2019, 5 , 26, 0, 0, 0)
        };
        
         ReactDOM.render(
@@ -546,7 +514,7 @@ class Last30DaysTimeline extends React.Component {
           document.getElementById("t1")
        )
 
-      /*ReactDOM.render(
+      ReactDOM.render(
           <Last30DaysTimeline data={data}/>,
           document.getElementById("t2")
        )
@@ -554,11 +522,13 @@ class Last30DaysTimeline extends React.Component {
        ReactDOM.render(
           <Last24HoursTimeline data={data}/>,
           document.getElementById("t3")
-       )*/
+       )
     </script>
 
           <div id="t1"> </div>
+          <br/>
           <div id="t2"> </div>
+          <br/>
           <div id="t3"> </div>
 
     </body>
