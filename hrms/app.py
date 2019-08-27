@@ -7,16 +7,13 @@ import os
 
 parent_dir = os.path.dirname(__file__)
 sys.path.append(os.path.join(parent_dir, 'hrms'))
-print(sys.path)
-
-
-app = Flask(__name__)
 
 file_data_source = FileDataSource(data_dir=os.path.join(parent_dir, 'data'))
 employees = Employees(file_data_source.collection('employees'))
 employee_routes = EmployeeRoutes(employees)
 
 # Register all urls
+app = Flask(__name__)
 app.add_url_rule('/employees', view_func=employee_routes.all_employees)
 app.add_url_rule('/employees', view_func=employee_routes.create_employee, methods=['POST'])
 app.add_url_rule('/employees/<employee_id>', view_func=employee_routes.get_employee)
