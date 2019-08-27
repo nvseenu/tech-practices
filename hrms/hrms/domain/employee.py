@@ -1,17 +1,20 @@
 import json
 
+
 class Employee:
 
-	def __init__(self, fields):
-		if 'id' not in fields:
-			raise ValueError('id field is not found')
+    def __init__(self, collection, fields):
+        if 'id' not in fields:
+            raise ValueError('id field is not found')
 
-		self._fields = fields	
+        self._collection = collection
+        self._fields = fields
 
-	
-	def save(self):		
-		print('dumps ===> ', self.to_json())
+    def id(self):
+        return self._fields['id']
 
-	
-	def to_json(self):
-		return json.dumps(self._fields)
+    def save(self):
+        self._collection.store(self._fields)
+
+    def fields(self):
+        return self._fields

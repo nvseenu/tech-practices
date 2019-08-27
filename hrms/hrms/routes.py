@@ -1,29 +1,18 @@
 from flask import request
-from flask import jsonify
 
 class EmployeeRoutes:
 
-	def __init__(self, employees):
-		self._employees = employees
+    def __init__(self, employees):
+        self._employees = employees
 
-	def all_employees(self):
-		emps = self._employees.all()
-		return jsonify(emps)
+    def all_employees(self):
+        emps = self._employees.all()
+        return emps
 
-	def create_employee(self):		
-		e = self._employees.create(request.form)
-		return e.to_json()
+    def create_employee(self):
+        e = self._employees.create(request.form)
+        return e.fields()
 
-	def get_employee(self, employee_id):
-		return "get_employee: {}".format(employee_id)
-
-
-
-
-
-
-
-
-
-
-
+    def get_employee(self, employee_id):
+        emp = self._employees.find_by_id(employee_id)
+        return emp.fields()
