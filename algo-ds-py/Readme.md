@@ -13,3 +13,4 @@ Algorithms:
 ==========
 - Insertion Sort
 - Merge Sort
+- Binary Search
