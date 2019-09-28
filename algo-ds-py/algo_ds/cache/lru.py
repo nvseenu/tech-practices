@@ -1,6 +1,6 @@
 class LRU:
 
-    def __init__(self,size):
+    def __init__(self, size):
         self.entries = []
         self.size = size
 
@@ -9,20 +9,15 @@ class LRU:
             if key == entry.key:
                 return entry.value
 
-        return None        
-        
+        return None
 
     def put(self, key, value):
         if len(self.entries) > 4:
-            
-        self.entries.append(Entry(key, value))
 
+        self.entries.append(Entry(key, value))
 
 
 class Entry:
     def __init__(self, key, value):
         self.key = key
         self.value = value
-
-        
-

@@ -1,10 +1,11 @@
 import time
 
+
 class Node:
 
-	def __init__(self, id = -1,keys = [], root = False, child_node_ids = []):
+	def __init__(self, id=-1, keys=[], root=False, child_node_ids=[]):
 		self._id = id
-		self._keys = keys 
+		self._keys = keys
 		self._child_node_ids = child_node_ids
 		self._root = root
 
