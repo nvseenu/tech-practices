@@ -1,0 +1,78 @@
+.DeviceDetails {
+    display:flex;
+    flex-direction: column;
+    background-color:grey;
+    width:100%;
+    border-radius: 5px;
+  }
+
+  .BodyTitle {
+    font-weight: bold;
+    width: 50px;
+  }
+
+  .BodyInfo {
+    flex: 5;
+    color: grey;
+  }
+  
+  .HeaderArea {
+    font-weight: bold;
+    width: 180px;
+  }
+  .HeaderAreaSmall {
+    font-weight: bold;
+    width: 100px;
+  }
+  .HeaderAreaTiny {
+    font-weight: bold;
+    width: 50px;
+  }
+  .Separator {
+    width:'100%';
+    height:1px;
+    background-color: grey;
+  }
+  .TitleRight {
+    display:flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .TitleLeft {
+    display:flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .ListHolder {
+    display: flex;
+    flex-direction: column;
+    padding-left:20px;
+    padding-right:20px;
+  }
+  .ListItemOuter {
+    display: flex;
+    width:100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .ListItemLeft {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .RegularButton {
+    padding: 0;
+    border: none;
+    background: none;
+    outline: none;
+    color: #0073d1;
+    font-size: 16px;
+  
+  }
+  .Helper {
+    color:white;
+    font-size: 12px;
+    padding:0px;
+    margin:5px 5px 5px 0px;
+  }
