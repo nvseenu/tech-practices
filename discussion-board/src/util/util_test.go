@@ -29,7 +29,7 @@ func TestExtractUserName(t *testing.T) {
 		{
 			"Email does not start with C-",
 			"srini.nata@xyz.com",
-			"Rubia Mussrath",
+			"Nata Srini",
 		},
 		{
 			"Email does not have .",
