@@ -1,77 +1,102 @@
+import logging
 from flask import Blueprint, request, jsonify
 from urllib.parse import unquote
 
 from .config import Config
+from psycopg2 import pool
+from .book import BookRepo
+from .book_service import BookService
+logger = logging.getLogger(__name__)
+
 
 def createBlueprint():
-    book_routes = BookRoutes()
+    cpool = pool.ThreadedConnectionPool(
+        minconn=1,
+        maxconn=5,
+        database='booksapi',
+        user='postgres',
+        password='postgres',
+        host='127.0.0.1',
+        port='5432')
+    if not cpool:
+        raise ValueError('Unable to create a connection pool.')
+
+    book_repo = BookRepo(cpool)
+    book_service = BookService(book_repo)
+    book_routes = BookRoutes(book_service)
+
     blueprint = Blueprint('books_api', __name__)
+    blueprint.add_url_rule('/books', view_func=book_routes.get_books, methods=['GET'])
     blueprint.add_url_rule('/books', view_func=book_routes.create_book, methods=['POST'])
+    blueprint.add_url_rule('/books/<int:id>', view_func=book_routes.get_book, methods=['GET'])
+    blueprint.add_url_rule('/books/<int:id>', view_func=book_routes.update_book, methods=['PUT'])
+    blueprint.add_url_rule('/books/<int:id>', view_func=book_routes.delete_book, methods=['DELETE'])
     return blueprint
 
+
 class BookRoutes:
+
+    def __init__(self, book_service):
+        self._book_service = book_service
 
     def create_book(self):
         """
         Creates a new book
-        """ 
-        print(request.get_json())
-        #book = Book.from_dict(request.get_json())
-        #print(book)
+        """
+        book_info = request.get_json()
+        if not book_info:
+            raise ValueError('No json found in the request')
 
-        return ApiResponse().dict() #status_code=200, status='success', data=[book]).dict()
+        print('Creating a book with details: ', book_info)
+        saved_book = self._book_service.create_book(book_info)
+        logger.info('Created a new book with id: %d', saved_book['id'])
+        return {
+            'status_code': 201,
+            'status': 'success',
+            'data': [{'book': saved_book}]
+        }
 
+    def get_book(self, id):
+        book = self._book_service.get_book(id)
+        logger.info('Found a book with id: %s', id)
+        return {
+            'status_code': 200,
+            'status': 'success',
+            'data': book
+        }
 
-class Book:
+    def get_books(self):
+        filters = request.get_json()
+        if not filters:
+            filters = {}
+        logger.debug('Get all books matching with filters: %s', filters)
+        books = self._book_service.get_books(**filters)
+        logger.info('Found %d books for given filters: %s', len(books), filters)
+        return {
+            'status_code': 200,
+            'status': 'success',
+            'data': books
+        }
 
-    def __init__(self, name,isbn, authors, country, number_of_pages, publisher, release_date):
-        self._name = name
-        self._isbn = isbn
-        self._authors = authors
-        self._country = country
-        self._number_of_pages = number_of_pages
-        self._publisher = publisher
-        self._release_date = release_date       
-    
-    def name(self):
-        return self._name
+    def update_book(self, id):
+        book_info = request.get_json()
+        if not book_info:
+            raise ValueError('No json found in the request')
+        book = self._book_service.update_book(id, **book_info)
+        logger.info('Updated a book with id: %s', id)
+        return {
+            'status_code': 200,
+            'status': 'success',
+            'message': 'The book {} was updated successfully'.format(book['name']),
+            'data': book
+        }
 
-    def isbn(self):
-        return self._isbn
-
-    def authors(self):
-        return self._authors
-
-    def country(self):
-        return self._country
-
-    def number_of_pages(self):
-        return self._number_of_pages
-
-    def release_date(self):
-        return self._release_date
-
-    @staticmethod
-    def from_dict(dict):
-        return Book(name = dict['name'],
-            isbn=dict['isbn'],
-            authors=dict['authors'],
-            country=dict['country'],
-            number_of_pages=dict['number_of_pages'],
-            publisher=dict['publisher'],
-            release_date=dict['release_date'])
-
-
-        
-
-
-class ApiResponse:
-
-    def __init__(self, status_code=200, status='success', data=[]):
-        self.status_code = status_code
-        self.status = status
-        self.data = data
-
-    def dict(self):
-        return self.__dict__
-
+    def delete_book(self, id):
+        book = self._book_service.delete_book(id)
+        logger.info('Found a book with id: %s', id)
+        return {
+            'status_code': 204,
+            'status': 'success',
+            'message': 'The book {} was updated successfully'.format(book['name']),
+            'data': []
+        }

@@ -25,8 +25,8 @@ Write external api using third party api
 - write integration test => Done
 
 Write api using db
-- setup flask app
-- implement base version
+- setup flask app => Done
+- implement base version => Done
 
 - move db details to config
 - add logger
@@ -37,3 +37,17 @@ Write api using db
 - Make the project installable
 - Test the installation
 - check in into git repo
+
+
+
+
+CREATE TABLE books (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    isbn VARCHAR(50) NOT NULL,
+    authors VARCHAR(100) NOT NULL,
+    country VARCHAR(50) NOT NULL,
+    number_of_pages INT DEFAULT 0,
+    publisher VARCHAR(100),
+    release_date DATE
+)

@@ -5,11 +5,12 @@ from .config import Config
 
 
 def createBlueprint():
-    external_book_service = ExternalBookService({ 'ICE_AND_FIRE_API_BASE_URL' : 'https://anapioficeandfire.com/api'})
+    external_book_service = ExternalBookService({'ICE_AND_FIRE_API_BASE_URL': 'https://anapioficeandfire.com/api'})
     external_books_routes = ExternalBookRoutes(external_book_service)
     blueprint = Blueprint('external_books_api', __name__)
     blueprint.add_url_rule('/', view_func=external_books_routes.get_external_book)
     return blueprint
+
 
 class ExternalBookRoutes:
 
