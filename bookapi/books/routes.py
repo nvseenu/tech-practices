@@ -2,22 +2,14 @@ import logging
 from flask import Blueprint, request, jsonify
 from urllib.parse import unquote
 
-from .config import Config
 from psycopg2 import pool
 from .book import BookRepo
 from .book_service import BookService
 logger = logging.getLogger(__name__)
 
 
-def createBlueprint():
-    cpool = pool.ThreadedConnectionPool(
-        minconn=1,
-        maxconn=5,
-        database='booksapi',
-        user='postgres',
-        password='postgres',
-        host='127.0.0.1',
-        port='5432')
+def createBlueprint(config):
+    cpool = pool.ThreadedConnectionPool(**config['connection_pool'])
     if not cpool:
         raise ValueError('Unable to create a connection pool.')
 
