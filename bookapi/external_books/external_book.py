@@ -15,7 +15,14 @@ class ExternalBookRepo:
 
         try:
             params = {'name': name}
-            res = requests.get('{}/books'.format(self._config['ice_and_fire_api_base_url']), params=params)
+            # To access version 1 of anapioficeandfire, below header is required.
+            # if we don't pass the header, we may access updated version of the api which
+            # may break ( if it has any change in url / response)
+            headers = {'Accept': 'application/vnd.anapioficeandfire+json; version=1'}
+            res = requests.get(
+                '{}/books'.format(self._config['ice_and_fire_api_base_url']),
+                params=params,
+                headers=headers)
 
             if res.status_code != 200:
                 raise ExternalBookError('UNABLE_TO_FETCH_BOOK', None,
